@@ -13,7 +13,6 @@ export const useAuth = () => {
       setUser(userProfile);
       return userProfile;
     } catch (err) {
-      console.error('Ошибка загрузки данных пользователя:', err);
       // Если не удалось загрузить профиль, устанавливаем базовые данные
       setUser({ email: 'user@example.com' });
     }

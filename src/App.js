@@ -88,71 +88,65 @@ function App() {
       setEmail('');
       setPassword('');
     } catch (err) {
-      console.error('Ошибка авторизации:', err);
+      // Ошибка обрабатывается в хуке useAuth
     }
   };
 
   const handleSubmit = async () => {
     try {
-      const result = await submitForm();
-      console.log('Маршрут сгенерирован:', result);
+      await submitForm(); // ← убрали переменную result
       await loadUserData();
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteForm
     }
   };
 
   const handleLoadRoute = async () => {
     if (!routeIdInput.trim()) return;
     try {
-      const result = await loadRoute(routeIdInput);
-      console.log('Маршрут загружен:', result);
+      await loadRoute(routeIdInput);
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteForm
     }
   };
 
   const handleCancelRoute = async () => {
     if (!routeIdInput.trim()) return;
     try {
-      const result = await cancelCurrentRoute(routeIdInput, cancelReason);
-      console.log('Маршрут отменен:', result);
+      await cancelCurrentRoute(routeIdInput, cancelReason);
       await loadUserData();
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteForm
     }
   };
 
   const handleEditStatus = async (status) => {
     if (!routeIdInput.trim()) return;
     try {
-      const result = await editRouteStatus(routeIdInput, status);
-      console.log('Статус обновлен:', result);
+      await editRouteStatus(routeIdInput, status);
       await loadUserData();
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteForm
     }
   };
 
   const handleSubmitFeedback = async () => {
     if (!routeIdInput.trim()) return;
     try {
-      const result = await submitFeedback(routeIdInput, feedbackRating, feedbackComment);
-      console.log('Отзыв отправлен:', result);
+      await submitFeedback(routeIdInput, feedbackRating, feedbackComment);
       setFeedbackRating(5);
       setFeedbackComment('');
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteForm
     }
   };
 
   const handleLoadAreas = async () => {
     if (!selectedCityForAreas.trim()) return;
     try {
-      const result = await getAreas(selectedCityForAreas);
-      console.log('Районы загружены:', result);
+      await getAreas(selectedCityForAreas);
     } catch (err) {
-      console.error('Ошибка:', err);
+      // Ошибка обрабатывается в хуке useRouteAreas
     }
   };
 
@@ -161,7 +155,7 @@ function App() {
     try {
       await updateUserRoutes(status ? { status } : {});
     } catch (err) {
-      console.error('Ошибка фильтрации:', err);
+      // Ошибка обрабатывается в хуке useUser
     }
   };
 
