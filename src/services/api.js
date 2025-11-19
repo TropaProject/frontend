@@ -1,16 +1,15 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Токен будет автоматически добавляться к запросам
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
@@ -19,13 +18,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Интерцептор для автоматического обновления токена
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Если ошибка 401 и это не запрос обновления токена
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
@@ -36,13 +33,10 @@ api.interceptors.response.use(
           const newAccessToken = response.data.access;
           
           localStorage.setItem('access_token', newAccessToken);
-          
-          // Повторяем оригинальный запрос с новым токеном
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
-        // Если не удалось обновить токен - разлогиниваем
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';
@@ -50,7 +44,6 @@ api.interceptors.response.use(
       }
     }
     
-    // Обработка других ошибок
     if (error.response?.data?.message) {
       throw new Error(error.response.data.message);
     } else {
@@ -59,7 +52,6 @@ api.interceptors.response.use(
   }
 );
 
-// API для авторизации
 export const authAPI = {
   async login(credentials) {
     const response = await api.post('/api/auth/login', credentials);
@@ -86,7 +78,6 @@ export const authAPI = {
   },
 };
 
-// API для работы с пользователем
 export const userAPI = {
   async getUserProfile() {
     const response = await api.get('/api/user');
@@ -113,7 +104,6 @@ export const userAPI = {
   },
 };
 
-// API для работы с маршрутами
 export const routeFormAPI = {
   async getFormData() {
     const response = await api.get('/api/route/form');
@@ -127,6 +117,16 @@ export const routeFormAPI = {
 export const routeGenerateAPI = {
   async generateRoute(routeData) {
     const response = await api.post('/api/route/generate', routeData);
+    if (response.data.status !== 'success') {
+      throw new Error('Invalid response format');
+    }
+    return response.data.data;
+  },
+};
+
+export const routeDescriptionAPI = {
+  async generateDescription(routeData) {
+    const response = await api.post('/api/gen-description/', routeData);
     if (response.data.status !== 'success') {
       throw new Error('Invalid response format');
     }
@@ -157,7 +157,6 @@ export const routeShowAPI = {
   },
 };
 
-// Новые API ручки
 export const routeAreaAPI = {
   async getAreas(cityId) {
     const response = await api.get('/api/route/area', {
@@ -197,7 +196,6 @@ export const routeFeedbackAPI = {
   },
 };
 
-// Вспомогательные функции для работы с токенами
 export const tokenService = {
   setTokens(access, refresh) {
     localStorage.setItem('access_token', access);

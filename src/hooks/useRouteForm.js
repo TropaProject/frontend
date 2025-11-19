@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { routeFormAPI } from '../services/api';
 import { useRouteGenerate } from './useRouteGenerate';
 import { useRouteManagement } from './useRouteManagement';
+import { useRouteDescription } from './useRouteDescription';
 import { useAuth } from './useAuth';
 
 export const useRouteForm = () => {
@@ -21,12 +22,15 @@ export const useRouteForm = () => {
       duration: 'medium',
       transport: 'walking'
     },
-    description: ''
+    description: '',
+    startPoint: '',
+    startArea: '',
+    gptDescription: ''
   });
 
-  // Используем хуки для генерации, управления маршрутами и авторизации
   const { generatedRoute, loading: generating, error: generateError, generateRoute, resetRoute } = useRouteGenerate();
   const { currentRoute, loading: routeLoading, error: routeError, getRoute, cancelRoute, reset: resetManagement } = useRouteManagement();
+  const { generatedDescription, loading: descLoading, error: descError, generateDescription, reset: resetDescription } = useRouteDescription();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -49,7 +53,6 @@ export const useRouteForm = () => {
     loadFormData();
   }, []);
 
-  // Методы для обновления состояния формы
   const setSelectedCity = (city) => {
     setFormState(prev => ({ ...prev, selectedCity: city }));
   };
@@ -90,18 +93,28 @@ export const useRouteForm = () => {
     setFormState(prev => ({ ...prev, description }));
   };
 
-  // Валидация формы
+  const setStartPoint = (startPoint) => {
+    setFormState(prev => ({ ...prev, startPoint }));
+  };
+
+  const setStartArea = (startArea) => {
+    setFormState(prev => ({ ...prev, startArea }));
+  };
+
+  const setGptDescription = (gptDescription) => {
+    setFormState(prev => ({ ...prev, gptDescription }));
+  };
+
   const isValid = Boolean(
     formState.selectedCity && 
     formState.selectedInterests.length > 0 && 
     formState.selectedMood
   );
 
-  // Преобразование данных формы в формат для API
   const prepareRouteData = () => {
     if (!isValid) return null;
 
-    return {
+    const routeData = {
       city_id: formState.selectedCity.id,
       time_of_day: formState.localParams.timeOfDay,
       interests: formState.selectedInterests.map(interest => interest.id),
@@ -111,9 +124,16 @@ export const useRouteForm = () => {
       duration_minutes: getDurationInMinutes(formState.localParams.duration),
       description: formState.description || 'Хочу интересный маршрут'
     };
+
+    if (formState.startPoint) {
+      routeData.start_point = formState.startPoint;
+    } else if (formState.startArea) {
+      routeData.start_area = formState.startArea;
+    }
+
+    return routeData;
   };
 
-  // Конвертация длительности в минуты
   const getDurationInMinutes = (duration) => {
     const durations = {
       short: 60,
@@ -123,7 +143,19 @@ export const useRouteForm = () => {
     return durations[duration] || 120;
   };
 
-  // Отправка формы для генерации маршрута
+  const generateRouteDescription = async () => {
+    if (!isValid) {
+      throw new Error('Заполните все обязательные поля для генерации описания');
+    }
+
+    if (!isAuthenticated) {
+      throw new Error('Для генерации описания необходимо авторизоваться');
+    }
+
+    const routeData = prepareRouteData();
+    return await generateDescription(routeData);
+  };
+
   const submitForm = async () => {
     if (!isValid) {
       throw new Error('Заполните все обязательные поля');
@@ -137,7 +169,6 @@ export const useRouteForm = () => {
     return await generateRoute(routeData);
   };
 
-  // Загрузить маршрут по ID
   const loadRoute = async (routeId) => {
     if (!isAuthenticated) {
       throw new Error('Для просмотра маршрута необходимо авторизоваться');
@@ -145,7 +176,6 @@ export const useRouteForm = () => {
     return await getRoute(routeId);
   };
 
-  // Отменить маршрут
   const cancelCurrentRoute = async (routeId, reason = '') => {
     if (!isAuthenticated) {
       throw new Error('Для отмены маршрута необходимо авторизоваться');
@@ -153,7 +183,20 @@ export const useRouteForm = () => {
     return await cancelRoute(routeId, reason);
   };
 
-  // Сброс формы
+  const editRouteStatus = async (routeId, status) => {
+    if (!isAuthenticated) {
+      throw new Error('Для изменения статуса маршрута необходимо авторизоваться');
+    }
+    return await cancelRoute(routeId, status);
+  };
+
+  const submitFeedback = async (routeId, rating, comment = '') => {
+    if (!isAuthenticated) {
+      throw new Error('Для отправки отзыва необходимо авторизоваться');
+    }
+    return await cancelRoute(routeId, rating, comment);
+  };
+
   const resetForm = () => {
     setFormState({
       selectedCity: null,
@@ -165,51 +208,49 @@ export const useRouteForm = () => {
         duration: 'medium',
         transport: 'walking'
       },
-      description: ''
+      description: '',
+      startPoint: '',
+      startArea: '',
+      gptDescription: ''
     });
     resetRoute();
     resetManagement();
+    resetDescription();
   };
 
   return {
-    // Данные формы
     cities,
     interests,
     moods,
     formState,
-    
-    // Состояние загрузки/ошибок формы
     loading,
     error,
     isValid,
-    
-    // Авторизация
     isAuthenticated,
-    
-    // Состояние генерации маршрута
+    generatedDescription,
+    descLoading,
+    descError,
     generatedRoute,
     generating,
     generateError,
-    
-    // Состояние управления маршрутами
     currentRoute,
     routeLoading,
     routeError,
-    
-    // Методы формы
     setSelectedCity,
     setSelectedInterests,
     toggleInterest,
     setSelectedMood,
     setLocalParams,
     setDescription,
+    setStartPoint,
+    setStartArea,
+    setGptDescription,
     resetForm,
-    
-    // Методы генерации
+    generateRouteDescription,
     submitForm,
-    
-    // Методы управления маршрутами
     loadRoute,
     cancelCurrentRoute,
+    editRouteStatus,
+    submitFeedback,
   };
 };

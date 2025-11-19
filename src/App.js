@@ -25,13 +25,19 @@ function App() {
     setSelectedMood,
     setLocalParams,
     setDescription,
+    setStartPoint,
+    setGptDescription,
     submitForm,
     loadRoute,
     cancelCurrentRoute,
     editRouteStatus,
     submitFeedback,
     isValid,
-    isAuthenticated
+    isAuthenticated,
+    generatedDescription,
+    descLoading,
+    descError,
+    generateRouteDescription
   } = useRouteForm();
 
   const { 
@@ -94,7 +100,7 @@ function App() {
 
   const handleSubmit = async () => {
     try {
-      await submitForm(); // ← убрали переменную result
+      await submitForm();
       await loadUserData();
     } catch (err) {
       // Ошибка обрабатывается в хуке useRouteForm
@@ -483,22 +489,125 @@ function App() {
             />
           </div>
 
-          <button 
-            onClick={handleSubmit}
-            disabled={!isValid || generating}
-            style={{ 
-              padding: '12px 24px', 
-              backgroundColor: isValid ? '#007bff' : '#ccc',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: isValid ? 'pointer' : 'not-allowed',
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
-          >
-            {generating ? '🔄 Генерация...' : '🚀 Сгенерировать маршрут'}
-          </button>
+          {/* Точка старта */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Точка старта (координаты): </label>
+            <input
+              type="text"
+              placeholder="55.766157, 37.617797"
+              onChange={(e) => setStartPoint(e.target.value)}
+              style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', width: '100%', maxWidth: '500px' }}
+            />
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+              Укажите координаты в формате "широта, долгота"
+            </div>
+          </div>
+
+          {/* GPT описание */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Дополнительное описание для GPT: </label>
+            <textarea
+              placeholder="Опишите подробнее ваши пожелания для ИИ..."
+              onChange={(e) => setGptDescription(e.target.value)}
+              style={{ 
+                padding: '8px', 
+                border: '1px solid #ddd', 
+                borderRadius: '4px', 
+                width: '100%', 
+                maxWidth: '500px',
+                minHeight: '80px',
+                resize: 'vertical'
+              }}
+            />
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+              Это описание поможет ИИ лучше понять ваши предпочтения
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '20px' }}>
+            <button 
+              onClick={async () => {
+                try {
+                  await generateRouteDescription();
+                } catch (err) {
+                  // Ошибка обрабатывается в хуке
+                }
+              }}
+              disabled={!isValid || descLoading}
+              style={{ 
+                padding: '12px 24px', 
+                backgroundColor: isValid ? '#17a2b8' : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: isValid ? 'pointer' : 'not-allowed',
+                fontSize: '14px'
+              }}
+            >
+              {descLoading ? '🤖 Генерация...' : '🧠 Сгенерировать описание'}
+            </button>
+
+            <button 
+              onClick={handleSubmit}
+              disabled={!isValid || generating}
+              style={{ 
+                padding: '12px 24px', 
+                backgroundColor: isValid ? '#007bff' : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: isValid ? 'pointer' : 'not-allowed',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              {generating ? '🔄 Генерация...' : '🚀 Сгенерировать маршрут'}
+            </button>
+          </div>
+
+          {generatedDescription && (
+            <div style={{ 
+              marginTop: '20px', 
+              padding: '20px', 
+              border: '2px solid #17a2b8', 
+              borderRadius: '8px', 
+              backgroundColor: '#e3f2fd' 
+            }}>
+              <h4 style={{ marginTop: '0', color: '#01579b', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                🤖 Сгенерированное описание
+              </h4>
+              <p style={{ 
+                margin: '0', 
+                color: '#333', 
+                lineHeight: '1.6',
+                fontSize: '16px',
+                fontStyle: 'italic'
+              }}>
+                {generatedDescription.route_description}
+              </p>
+              <button 
+                onClick={() => setGptDescription(generatedDescription.route_description)}
+                style={{ 
+                  marginTop: '15px',
+                  padding: '8px 16px', 
+                  backgroundColor: '#17a2b8',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                📝 Использовать это описание
+              </button>
+            </div>
+          )}
+
+          {descError && (
+            <div style={{ color: '#dc3545', marginTop: '10px', padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
+              <strong>Ошибка генерации описания:</strong> {descError}
+            </div>
+          )}
 
           {!isValid && formState.selectedCity && (
             <div style={{ color: '#856404', marginTop: '10px', padding: '10px', backgroundColor: '#fff3cd', borderRadius: '4px' }}>
@@ -563,6 +672,14 @@ function App() {
                       </span>
                     </div>
                     <p style={{ margin: '0 0 10px 0', color: '#666', lineHeight: '1.4' }}>{point.description}</p>
+                    {point.reason && (
+                      <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                        <strong>Почему выбрано:</strong>
+                        <p style={{ margin: '5px 0 0 0', color: '#495057', fontSize: '14px', lineHeight: '1.4' }}>
+                          {point.reason}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       {point.tags.map((tag, tagIndex) => (
                         <span 
