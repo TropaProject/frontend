@@ -440,13 +440,27 @@ function App() {
               <div>
                 <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Бюджет: </label>
                 <select 
-                  value={formState.localParams.budget}
+                  value={formState.localParams.budget || 'бюджетно (500-1500р)'}
                   onChange={(e) => setLocalParams({ budget: e.target.value })}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '180px' }}
+                >
+                  <option value="бесплатно (0-500р)">Бесплатно (0-500₽)</option>
+                  <option value="бюджетно (500-1500р)">Бюджетно (500-1500₽)</option>
+                  <option value="средне (1500-3000р)">Средне (1500-3000₽)</option>
+                  <option value="дорого (3000-10000р)">Дорого (3000-10000₽)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>Радиус (км): </label>
+                <select 
+                  value={formState.localParams.radius_km || 1.0}
+                  onChange={(e) => setLocalParams({ radius_km: parseFloat(e.target.value) })}
                   style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '120px' }}
                 >
-                  <option value="economy">Эконом</option>
-                  <option value="comfort">Комфорт</option>
-                  <option value="premium">Премиум</option>
+                  <option value="0.5">0.5 км</option>
+                  <option value="1.0">1.0 км</option>
+                  <option value="3.0">3.0 км</option>
                 </select>
               </div>
               
@@ -624,6 +638,31 @@ function App() {
           {generatedRoute && (
             <div style={{ marginTop: '20px', padding: '20px', border: '2px solid #28a745', borderRadius: '8px', backgroundColor: '#f8fff9' }}>
               <h3 style={{ marginTop: '0', color: '#155724' }}>✅ Маршрут успешно сгенерирован!</h3>
+              
+              {/* Блок с метриками */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px', marginBottom: '20px' }}>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '5px' }}>Общее время</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{generatedRoute.total_duration} мин</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '5px' }}>Расстояние</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{(generatedRoute.total_meters / 1000).toFixed(1)} км</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '5px' }}>Стоимость</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745' }}>{generatedRoute.total_cost} ₽</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '5px' }}>Время в пути</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{generatedRoute.walk_time} мин</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '5px' }}>Время на места</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333' }}>{generatedRoute.visit_time} мин</div>
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
                 <div>
                   <strong>ID маршрута:</strong>
@@ -889,15 +928,33 @@ function App() {
                   </div>
                 </div>
                 <div>
-                  <strong>Длительность:</strong>
+                  <strong>Общее время:</strong>
                   <div style={{ marginTop: '5px', fontSize: '16px', fontWeight: 'bold' }}>
                     {currentRoute.total_duration} мин
+                  </div>
+                </div>
+                <div>
+                  <strong>Расстояние:</strong>
+                  <div style={{ marginTop: '5px', fontSize: '16px', fontWeight: 'bold' }}>
+                    {currentRoute.total_meters ? `${(currentRoute.total_meters / 1000).toFixed(1)} км` : '—'}
                   </div>
                 </div>
                 <div>
                   <strong>Стоимость:</strong>
                   <div style={{ marginTop: '5px', fontSize: '16px', fontWeight: 'bold', color: '#28a745' }}>
                     {currentRoute.total_cost} ₽
+                  </div>
+                </div>
+                <div>
+                  <strong>Время в пути:</strong>
+                  <div style={{ marginTop: '5px', fontSize: '16px', fontWeight: 'bold' }}>
+                    {currentRoute.walk_time ? `${currentRoute.walk_time} мин` : '—'}
+                  </div>
+                </div>
+                <div>
+                  <strong>Время на места:</strong>
+                  <div style={{ marginTop: '5px', fontSize: '16px', fontWeight: 'bold' }}>
+                    {currentRoute.visit_time ? `${currentRoute.visit_time} мин` : '—'}
                   </div>
                 </div>
               </div>
@@ -1088,12 +1145,20 @@ function App() {
                           </div>
                         </div>
                         <div>
-                          <strong>Длительность:</strong>
+                          <strong>Общее время:</strong>
                           <div style={{ marginTop: '2px' }}>{route.total_duration} мин</div>
+                        </div>
+                        <div>
+                          <strong>Расстояние:</strong>
+                          <div style={{ marginTop: '2px' }}>{route.total_meters ? `${(route.total_meters / 1000).toFixed(1)} км` : '—'}</div>
                         </div>
                         <div>
                           <strong>Стоимость:</strong>
                           <div style={{ marginTop: '2px' }}>{route.total_cost} ₽</div>
+                        </div>
+                        <div>
+                          <strong>Время в пути:</strong>
+                          <div style={{ marginTop: '2px' }}>{route.walk_time ? `${route.walk_time} мин` : '—'}</div>
                         </div>
                       </div>
                     </div>

@@ -114,16 +114,26 @@ export const routeFormAPI = {
   },
 };
 
+
 export const routeGenerateAPI = {
   async generateRoute(routeData) {
     const response = await api.post('/api/route/generate', routeData);
     if (response.data.status !== 'success') {
       throw new Error('Invalid response format');
     }
-    return response.data.data;
+    // Возвращаем данные с новыми полями
+    const data = response.data.data;
+    return {
+      ...data,
+      // Новые поля из ответа
+      total_duration: data.total_duration,
+      total_meters: data.total_meters,
+      total_cost: data.total_cost,
+      walk_time: data.walk_time,
+      visit_time: data.visit_time,
+    };
   },
 };
-
 export const routeDescriptionAPI = {
   async generateDescription(routeData) {
     const response = await api.post('/api/gen-description/', routeData);
