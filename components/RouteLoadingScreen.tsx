@@ -240,7 +240,7 @@ export function RouteLoadingScreen({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-mint-50 via-lavender-50 to-sky-50 z-50 flex items-start justify-center p-2 sm:p-4 overflow-y-auto py-8 sm:py-12 md:py-16">
+    <div className="fixed inset-0 bg-gradient-to-br from-mint-50 via-lavender-50 to-sky-50 z-50 flex items-start justify-center p-2 sm:p-4 overflow-y-auto py-16 sm:py-12 md:py-16">
       <Card className={`w-full max-w-2xl border border-gray-200 shadow-2xl animate-in fade-in duration-500 ${getCardMinHeight()} flex flex-col mx-auto my-auto`}>
         {/* ЗАГОЛОВОК */}
         <CardHeader className="text-center pb-3 sm:pb-4 flex-shrink-0 px-4 sm:px-6">
