@@ -300,11 +300,11 @@ export function RouteLoadingScreen({
                     style={{ width: `${progress}%` }} 
                   />
                 </div>
-                {/* Таймер оставшегося времени */}
+                {/* Таймер оставшегося времени 
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>Примерное время:</span>
                   <span className="font-medium">{remainingTime} секунд</span>
-                </div>
+                </div>*/}
               </div>
 
               {/* Animated Steps - УВЕЛИЧЕННАЯ ОБЛАСТЬ */}
