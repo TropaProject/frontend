@@ -294,7 +294,7 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-xl font-bold text-gray-900">
                       {userData?.username || "Пользователь"}
                     </h1>
                     <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
