@@ -10,7 +10,7 @@ const geist = Geist({ subsets: ["latin", "cyrillic"] })
 const geistMono = Geist_Mono({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "ТРОПА",
+  title: "Тропа",
   description: "Создавайте персонализированные маршруты для прогулок по городу",
   generator: "trails.app",
   icons: {

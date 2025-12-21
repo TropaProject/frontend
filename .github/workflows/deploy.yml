@@ -34,6 +34,15 @@ jobs:
           source: ".next,public,package.json,package-lock.json,next.config.js"
           target: "/opt/tropa-frontend"
 
+      - name: Upload .env to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 5.129.193.251
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.ENV_FILE }}" > /opt/tropa-frontend/.env
+
       - name: Restart frontend via PM2
         uses: appleboy/ssh-action@v1.0.0
         with:
