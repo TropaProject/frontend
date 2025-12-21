@@ -115,6 +115,7 @@ export interface RouteData {
   walk_time: number       // ← время пешком в минутах
   visit_time: number      // ← время на посещение в минутах
   description?: string
+  reason?: string
   status?: string
   point_sequence?: string[]
   points: RoutePoint[]
