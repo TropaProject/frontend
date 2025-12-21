@@ -1,0 +1,47 @@
+name: Deploy Frontend to Server
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: 5.129.193.251
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".next,public,package.json,package-lock.json,next.config.js"
+          target: "/opt/tropa/frontend"
+
+      - name: Restart frontend via PM2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 5.129.193.251
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/tropa/frontend
+            npm ci
+            pm2 restart mytropa-frontend || pm2 start npm --name mytropa-frontend -- start
+            pm2 save
