@@ -32,7 +32,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ".next,public,package.json,package-lock.json,next.config.js"
-          target: "/opt/tropa/frontend"
+          target: "/opt/tropa-frontend"
 
       - name: Restart frontend via PM2
         uses: appleboy/ssh-action@v1.0.0
@@ -41,7 +41,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/tropa/frontend
+            cd /opt/tropa-frontend
             npm ci
             pm2 restart mytropa-frontend || pm2 start npm --name mytropa-frontend -- start
             pm2 save
