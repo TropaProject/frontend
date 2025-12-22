@@ -20,8 +20,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies and build
+      - name: Write .env and build
         run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
           npm ci
           npm run build
 
