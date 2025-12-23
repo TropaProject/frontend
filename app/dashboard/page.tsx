@@ -476,7 +476,7 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
               </div>
               <div className="mt-2 flex justify-between text-xs text-gray-500">
                 <span>{stats.completed_routes} завершено</span>
-                <span>{stats?.active_routes - stats.completed_routes} осталось</span>
+                <span>{stats?.active_routes} осталось</span>
               </div>
             </div>
           )}
