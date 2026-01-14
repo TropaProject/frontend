@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Plus, MapPin, Calendar, TrendingUp, Clock, Star, Loader2, AlertCircle, User, Navigation, Trophy, Wallet, Target, Users, Route } from "lucide-react"
+import { Plus, MapPin, Calendar, TrendingUp, Clock, Star, Loader2, AlertCircle, User, Navigation, Trophy, Wallet, Target, Users, Route, Heart, Bookmark, ChevronRight, Map } from "lucide-react"
 import Link from "next/link"
-import { getUser, getUserRoutes, getUserStatistics, getAccessToken } from "@/lib/api"
-import type { UserData, RouteListItem, UserStatistics } from "@/lib/api"
+import { getUser, getUserRoutes, getUserStatistics, getAccessToken, getUserFavorites } from "@/lib/api"
+import type { UserData, RouteListItem, UserStatistics, FavoritePoint } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import {  CheckCircle, XCircle } from "lucide-react"
 import { updateRouteStatus } from "@/lib/api"
@@ -33,6 +33,9 @@ export default function DashboardPage() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [stats, setStats] = useState<UserStatistics | null>(null)
   const [routes, setRoutes] = useState<RouteListItem[]>([])
+  const [favorites, setFavorites] = useState<FavoritePoint[]>([])
+  const [activeTab, setActiveTab] = useState<"routes" | "favorites">("routes")
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -111,7 +114,6 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
         }
 
         // Загружаем маршруты
-        // Загружаем маршруты
         const routesResponse = await getUserRoutes()
         console.log("[app] Dashboard: routes response:", routesResponse)
 
@@ -127,6 +129,9 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
           setRoutes(typedRoutes)
         }
 
+        // Загружаем избранное
+        await loadFavorites()
+
       } catch (err) {
         console.error("[app] Dashboard: error loading data:", err)
         setError("Не удалось загрузить данные. Попробуйте обновить страницу.")
@@ -141,6 +146,23 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
 
     loadDashboardData()
   }, [router, mounted])
+
+  // Функция загрузки избранного
+  const loadFavorites = async () => {
+    setIsLoadingFavorites(true)
+    try {
+      const favoritesResponse = await getUserFavorites()
+      console.log("[app] Dashboard: favorites response:", favoritesResponse)
+
+      if (favoritesResponse.status === "success" && favoritesResponse.data) {
+        setFavorites(favoritesResponse.data)
+      }
+    } catch (err) {
+      console.error("[app] Dashboard: error loading favorites:", err)
+    } finally {
+      setIsLoadingFavorites(false)
+    }
+  }
 
   const getInitials = (email: string | undefined) => {
     if (!email) return "УП"
@@ -164,6 +186,26 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
   const formatShortDate = (dateString: string) => {
     try {
       const date = new Date(dateString)
+      return date.toLocaleDateString("ru-RU", { 
+        day: "numeric", 
+        month: "short" 
+      })
+    } catch {
+      return ""
+    }
+  }
+
+  const formatAddedDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      const now = new Date()
+      const diffTime = Math.abs(now.getTime() - date.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      
+      if (diffDays === 1) return "Сегодня"
+      if (diffDays === 2) return "Вчера"
+      if (diffDays <= 7) return `${diffDays} дней назад`
+      
       return date.toLocaleDateString("ru-RU", { 
         day: "numeric", 
         month: "short" 
@@ -482,119 +524,276 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
           )}
         </div>
 
-        {/* Routes Section */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Мои маршруты</h2>
-            <p className="text-sm text-gray-600">История ваших путешествий</p>
+        {/* Navigation Tabs for Routes/Favorites */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-1 border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab("routes")}
+                className={`pb-3 px-4 text-sm font-medium transition-all ${
+                  activeTab === "routes"
+                    ? "border-b-2 border-mint-500 text-gray-900"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Route className="h-4 w-4" />
+                  Мои маршруты ({routes.length})
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveTab("favorites")}
+                className={`pb-3 px-4 text-sm font-medium transition-all ${
+                  activeTab === "favorites"
+                    ? "border-b-2 border-mint-500 text-gray-900"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Heart className="h-4 w-4" />
+                  Любимые места ({favorites.length})
+                </div>
+              </button>
+            </div>
+            <div>
+              {activeTab === "routes" && (
+                <Button asChild className="gap-2 bg-gradient-to-r from-mint-500 to-sky-500 hover:from-mint-600 hover:to-sky-600">
+                  <Link href="/quiz">
+                    <Plus className="h-4 w-4" />
+                    Новый маршрут
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
-          <Button asChild className="gap-2 bg-gradient-to-r from-mint-500 to-sky-500 hover:from-mint-600 hover:to-sky-600">
-            <Link href="/quiz">
-              <Plus className="h-4 w-4" />
-              Новый маршрут
-            </Link>
-          </Button>
         </div>
 
-        {routes.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Routes Section */}
+        {activeTab === "routes" && (
+          <>
+            {routes.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {routes.map((route) => {
+                  const statusInfo = getStatusBadge(route.status)
+                  
+                  // Функция для обновления статуса
+                  const handleUpdateStatus = async (newStatus: "going" | "done" | "cancelled") => {
+                    try {
+                      const result = await updateRouteStatus(route.route_id, newStatus)
+                      if (result.status === "success") {
+                        // Обновляем список маршрутов
+                        const updatedRoutes = routes.map(r => 
+                          r.route_id === route.route_id ? { ...r, status: newStatus } : r
+                        )
+                        setRoutes(updatedRoutes)
+                        alert(`Маршрут отмечен как ${newStatus === "done" ? "завершенный" : "отменен"}`)
+                      } else {
+                        alert(`Ошибка: ${result.error || "Неизвестная ошибка"}`)
+                      }
+                    } catch (err) {
+                      console.error("Ошибка обновления статуса:", err)
+                      alert("Произошла ошибка при обновлении статуса")
+                    }
+                  }
 
-{routes.map((route) => {
-  const statusInfo = getStatusBadge(route.status)
-  
-  // Функция для обновления статуса
-  const handleUpdateStatus = async (newStatus: "going" | "done" | "cancelled") => {
-    try {
-      const result = await updateRouteStatus(route.route_id, newStatus)
-      if (result.status === "success") {
-        // Обновляем список маршрутов
-        const updatedRoutes = routes.map(r => 
-          r.route_id === route.route_id ? { ...r, status: newStatus } : r
-        )
-        setRoutes(updatedRoutes)
-        alert(`Маршрут отмечен как ${newStatus === "done" ? "завершенный" : "отменен"}`)
-      } else {
-        alert(`Ошибка: ${result.error || "Неизвестная ошибка"}`)
-      }
-    } catch (err) {
-      console.error("Ошибка обновления статуса:", err)
-      alert("Произошла ошибка при обновлении статуса")
-    }
-  }
+                  return (
+                    <Card 
+                      key={route.route_id} 
+                      className="group border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg hover:-translate-y-1"
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="line-clamp-2 text-lg font-semibold text-gray-900 group-hover:text-mint-700">
+                              {route.description || "Без названия"}
+                            </CardTitle>
+                          </div>
+                          <Badge className={`border ${statusInfo.className}`}>
+                            {statusInfo.label}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Clock className="h-4 w-4" />
+                            <span>{route.total_duration} мин</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Star className="h-4 w-4" />
+                            <span>{route.total_cost} ₽</span>
+                          </div>
+                          <div className="col-span-2 flex items-center gap-2 text-gray-600">
+                            <Calendar className="h-4 w-4" />
+                            <span>Создан: {formatShortDate(route.created_at)}</span>
+                          </div>
+                        </div>
 
-  return (
+                        <div className="flex flex-col gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 py-2 border-gray-300 hover:bg-gray-50 hover:border-mint-300" 
+                            asChild
+                          >
+                            <Link href={`/route/${route.route_id}`}>
+                              Подробнее
+                            </Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              <Card className="border border-gray-200 bg-white shadow-sm">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="mb-4 rounded-full bg-gradient-to-br from-mint-100 to-sky-100 p-4">
+                    <Route className="h-12 w-12 text-mint-600" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">Пока нет маршрутов</h3>
+                  <p className="mb-6 text-sm text-gray-600 max-w-md">
+                    Создайте свой первый персонализированный маршрут и начните исследовать город
+                  </p>
+                  <Button asChild className="gap-2 bg-gradient-to-r from-mint-500 to-sky-500 hover:from-mint-600 hover:to-sky-600">
+                    <Link href="/quiz">
+                      <Plus className="h-4 w-4" />
+                      Создать первый маршрут
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
+
+        {/* Favorites Section */}
+        {activeTab === "favorites" && (
+          <>
+            {isLoadingFavorites ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="border border-gray-200 bg-white shadow-sm">
+                    <CardContent className="p-6">
+                      <div className="space-y-3">
+                        <div className="h-5 w-3/4 rounded bg-gray-200"></div>
+                        <div className="h-4 w-1/4 rounded bg-gray-200"></div>
+                        <div className="h-20 w-full rounded bg-gray-200"></div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="h-4 w-20 rounded bg-gray-200"></div>
+                          <div className="h-4 w-20 rounded bg-gray-200"></div>
+                        </div>
+                        <div className="h-9 w-full rounded bg-gray-200"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : favorites.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {favorites.map((favorite) => (
     <Card 
-      key={route.route_id} 
-      className="group border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg hover:-translate-y-1"
+      key={favorite.id} 
+      className="group border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col"
     >
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="line-clamp-2 text-lg font-semibold text-gray-900 group-hover:text-mint-700">
-              {route.description || "Без названия"}
+              {favorite.name}
             </CardTitle>
           </div>
-          <Badge className={`border ${statusInfo.className}`}>
-            {statusInfo.label}
-          </Badge>
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+            <span className="text-sm font-medium">{favorite.average_rating?.toFixed(1) || "0.0"}</span>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      
+      <CardContent className="space-y-4 flex-grow">
+        {favorite.image_url && (
+          <div className="overflow-hidden rounded-lg">
+            <img 
+              src={favorite.image_url} 
+              alt={favorite.name}
+              className="h-40 w-full object-cover transition-transform group-hover:scale-105"
+            />
+          </div>
+        )}
+        
+        <p className="line-clamp-3 text-sm text-gray-600">
+          {favorite.description}
+        </p>
+        
+        {favorite.note && (
+  <div className="rounded-lg bg-mint-50 p-3 border border-mint-100">
+    <div className="flex items-start gap-2">
+      <Bookmark className="h-4 w-4 text-mint-600 mt-0.5 flex-shrink-0" />
+      <div className="min-w-0"> {/* Этот div предотвращает переполнение */}
+        <p className="text-xs font-medium text-mint-800 mb-1">Ваша заметка:</p>
+        <p className="text-sm text-gray-700 italic line-clamp-1">
+          {favorite.note}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+        
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2 text-gray-600">
-            <Clock className="h-4 w-4" />
-            <span>{route.total_duration} мин</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <Star className="h-4 w-4" />
-            <span>{route.total_cost} ₽</span>
-          </div>
-          <div className="col-span-2 flex items-center gap-2 text-gray-600">
             <Calendar className="h-4 w-4" />
-            <span>Создан: {formatShortDate(route.created_at)}</span>
+            <span>Добавлено: {formatAddedDate(favorite.added_at)}</span>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 py-2 border-gray-300 hover:bg-gray-50 hover:border-mint-300" 
-            asChild
-          >
-            <Link href={`/route/${route.route_id}`}>
-              Подробнее
-            </Link>
-          </Button>
-        
         </div>
       </CardContent>
+      
+      <div className="p-6 pt-0 mt-auto">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="w-full py-2 border-gray-300 hover:bg-gray-50 hover:border-mint-300" 
+          asChild
+        >
+          <Link href={`/point/${favorite.id}`}>
+            Открыть место
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
     </Card>
-  )
-})}
-          </div>
-        ) : (
-          <Card className="border border-gray-200 bg-white shadow-sm">
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="mb-4 rounded-full bg-gradient-to-br from-mint-100 to-sky-100 p-4">
-                <Route className="h-12 w-12 text-mint-600" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-gray-900">Пока нет маршрутов</h3>
-              <p className="mb-6 text-sm text-gray-600 max-w-md">
-                Создайте свой первый персонализированный маршрут и начните исследовать город
-              </p>
-              <Button asChild className="gap-2 bg-gradient-to-r from-mint-500 to-sky-500 hover:from-mint-600 hover:to-sky-600">
-                <Link href="/quiz">
-                  <Plus className="h-4 w-4" />
-                  Создать первый маршрут
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+  ))}
+</div>
+            ) : (
+              <Card className="border border-gray-200 bg-white shadow-sm">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="mb-4 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 p-4">
+                    <Heart className="h-12 w-12 text-rose-600" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">Нет любимых мест</h3>
+                  <p className="mb-6 text-sm text-gray-600 max-w-md">
+                    Добавляйте понравившиеся места в избранное, чтобы вернуться к ним позже
+                  </p>
+                  <div className="flex gap-3">
+                    
+                    <Button 
+                      className="gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
+                      asChild
+                    >
+                      <Link href="/quiz">
+                        <Plus className="h-4 w-4" />
+                        Создать маршрут
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
 
         {/* Информационная панель для новых пользователей */}
-        {routes.length === 0 && stats && (
+        {routes.length === 0 && activeTab === "routes" && stats && (
           <div className="mt-8">
             <Card className="border border-mint-200 bg-gradient-to-r from-mint-50 to-sky-50">
               <CardContent className="p-6">
