@@ -103,6 +103,8 @@ export interface RoutePoint {
     lat: number
     lng: number
   }
+  average_rating: number  
+  reviews_count: number   
 }
 
 export interface RouteData {
@@ -146,6 +148,89 @@ export interface GenerateRouteRequest {
   start_area?: string
   gpt_description?: string
   radius_km?: number
+}
+
+export interface AddFoodPointRequest {
+  route_id: string
+  between_index: number
+  interests: string[]
+  note?: string
+}
+
+export interface FoodInterest {
+  id: string
+  label: string
+  description: string
+}
+
+export interface FoodFormResponse {
+  interests: FoodInterest[]
+}
+
+export interface PointDetail {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string;
+  address: string;
+  city: string;
+  area: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  average_visit_duration: number;
+  average_cost: number;
+  average_rating: number;
+  reviews_count: number;
+  tags: string[];
+  interests: Array<{ id: number; label: string }>;
+  moods: Array<{ id: number; label: string }>;
+  best_visit_time: string[];
+  working_hours: Record<string, string>;
+  seasonality: {
+    is_seasonal: boolean;
+    months: number[];
+  };
+  analytics: {
+    view_count: number;
+    success_rate: number;
+    last_viewed_at: string;
+  };
+  last_reviews: Array<{
+    user_id: number;
+    username: string;
+    rating: number;
+    comment: string;
+    created_at: string;
+  }>;
+}
+
+export interface PointReviewsResponse {
+  point_id: string;
+  average_rating: number;
+  reviews_count: number;
+  page: number;
+  page_size: number;
+  total: number;
+  reviews: Array<{
+    user_id: number;
+    username: string;
+    rating: number;
+    comment: string;
+    created_at: string;
+  }>;
+}
+
+export interface FavoritePoint {
+  id: string;
+  name: string;
+  image_url: string;
+  description: string;
+  average_rating: number;
+  coordinates: { lat: number; lng: number };
+  note: string;
+  added_at: string;
 }
 
 export function getAccessToken(): string | null {
@@ -493,8 +578,16 @@ export async function getUser(): Promise<ApiResponse<UserData>> {
 }
 
 export async function getUserRoutes(status?: string): Promise<ApiResponse<RouteListItem[]>> {
-  const params = status ? `?status=${status}` : ""
-  return fetchWithAuth<RouteListItem[]>(`/user/list${params}`)
+  const token = getAccessToken()
+  const response = await fetch(`/api/user/list?limit=1000&offset=0`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  
+  const result = await response.json()
+  return result
 }
 
 export async function getUserStatistics(): Promise<ApiResponse<UserStatistics>> {
@@ -520,7 +613,7 @@ export async function generateRoute(data: GenerateRouteRequest): Promise<ApiResp
       time_of_day: data.time_of_day,
       interests: normalizeInterests(data.interests),
       mood: normalizeMoods(data.mood),
-      budget: data.budget, // Не нормализуем!
+      budget: data.budget,
       transport: data.transport,
       duration_minutes: data.duration_minutes,
       start_point: data.start_point,
@@ -544,6 +637,55 @@ export async function generateRoute(data: GenerateRouteRequest): Promise<ApiResp
       hasData: !!response.data,
       dataKeys: response.data ? Object.keys(response.data) : []
     })
+    
+    // Обработка ответа с новыми полями average_rating и reviews_count
+    if (response.status === "success" && response.data) {
+      console.log("[Frontend] Processing points with rating data...")
+      
+      // Убедитесь, что все точки имеют поля average_rating и reviews_count
+      if (response.data.points && Array.isArray(response.data.points)) {
+        console.log(`[Frontend] Processing ${response.data.points.length} points`)
+        
+        response.data.points = response.data.points.map((point, index) => {
+          const processedPoint = {
+            ...point,
+            // Убедимся, что координаты всегда объект
+            coordinates: point.coordinates || { lat: 0, lng: 0 },
+            // Новые поля с дефолтными значениями
+            average_rating: point.average_rating !== undefined ? point.average_rating : 0,
+            reviews_count: point.reviews_count !== undefined ? point.reviews_count : 0
+          }
+          
+          // Логирование для отладки
+          console.log(`[Frontend] Point ${index} (${point.name}):`, {
+            hasRating: point.average_rating !== undefined,
+            rating: point.average_rating,
+            reviews: point.reviews_count,
+            tags: point.tags?.length || 0
+          })
+          
+          return processedPoint
+        })
+        
+        // Также добавим логирование общего рейтинга маршрута
+        const averageRatings = response.data.points
+          .filter(p => p.average_rating > 0)
+          .map(p => p.average_rating)
+        
+        if (averageRatings.length > 0) {
+          const avgRating = averageRatings.reduce((a, b) => a + b, 0) / averageRatings.length
+          const totalReviews = response.data.points.reduce((sum, p) => sum + (p.reviews_count || 0), 0)
+          
+          console.log("[Frontend] Route rating summary:", {
+            pointsWithRatings: averageRatings.length,
+            averageRouteRating: avgRating.toFixed(2),
+            totalReviews: totalReviews
+          })
+        }
+      } else {
+        console.log("[Frontend] No points data or points is not an array")
+      }
+    }
     
     return response
     
@@ -819,7 +961,21 @@ function normalizeCityId(cityId: string): string {
 }
 
 export async function getRoute(routeId: string): Promise<ApiResponse<RouteData>> {
-  return fetchWithAuth<RouteData>(`/route/show/${routeId}`)
+  const response = await fetchWithAuth<RouteData>(`/route/show/${routeId}`)
+  
+  // Если нужно преобразовать данные при получении
+  if (response.status === "success" && response.data) {
+    // Убедитесь, что все точки имеют поля average_rating и reviews_count
+    if (response.data.points) {
+      response.data.points = response.data.points.map(point => ({
+        ...point,
+        average_rating: point.average_rating || 0,  // значение по умолчанию
+        reviews_count: point.reviews_count || 0     // значение по умолчанию
+      }))
+    }
+  }
+  
+  return response
 }
 
 export async function cancelRoute(routeId: string, reason?: string): Promise<ApiResponse<any>> {
@@ -1113,3 +1269,178 @@ export async function register(data: RegisterData): Promise<ApiResponse<AuthResp
   }
 }
 
+export async function addFoodPoint(data: AddFoodPointRequest): Promise<ApiResponse<RouteData>> {
+  console.log("=== [Frontend] addFoodPoint START ===")
+  console.log("[Frontend] Request data:", data)
+  
+  try {
+    // Подготовка данных
+    const requestData: any = {
+      route_id: data.route_id,
+      between_index: data.between_index,
+      interests: data.interests,
+    }
+    
+    if (data.note && data.note.trim()) {
+      requestData.note = data.note.trim()
+    }
+    
+    console.log("[Frontend] Final request data to backend:", requestData)
+    
+    // Отправляем запрос к бэкенду через API route
+    const token = getAccessToken()
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    }
+    
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`
+    }
+    
+    // Правильный URL к нашей API route
+    const apiUrl = "/api/route/add_food_point"
+    console.log("[Frontend] Making request to:", apiUrl)
+    
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(requestData),
+    })
+    
+    console.log("[Frontend] Response status:", response.status)
+    
+    let responseData: any = {}
+    try {
+      responseData = await response.json()
+      console.log("[Frontend] Response data:", responseData)
+    } catch (error) {
+      console.error("[Frontend] JSON parse error:", error)
+      const text = await response.text()
+      console.error("[Frontend] Raw response:", text.substring(0, 200))
+      return {
+        status: "error",
+        error: `HTTP ${response.status}: Неверный формат ответа`
+      }
+    }
+    
+    // Обработка ответа от API route (которая проксирует к бэкенду)
+    if (!response.ok) {
+      // API route вернула ошибку
+      return {
+        status: "error",
+        error: responseData.detail || 
+               responseData.error || 
+               responseData.message || 
+               `Ошибка ${response.status}: ${responseData.detail || "Не удалось добавить точку"}`
+      }
+    }
+    
+    // API route вернула успех, но бэкенд внутри неё мог вернуть ошибку
+    if (responseData.detail && responseData.detail.includes("No points found in radius")) {
+      return {
+        status: "error",
+        error: responseData.detail
+      }
+    }
+    
+    // Успешный ответ от бэкенда
+    let resultData = responseData.data || responseData
+    
+    // Убедимся, что все точки имеют поля average_rating и reviews_count
+    if (resultData.points && Array.isArray(resultData.points)) {
+      resultData.points = resultData.points.map((point: any) => ({
+        ...point,
+        coordinates: point.coordinates || { lat: 0, lng: 0 },
+        average_rating: point.average_rating !== undefined ? point.average_rating : 0,
+        reviews_count: point.reviews_count !== undefined ? point.reviews_count : 0
+      }))
+    }
+    
+    // Нормализуем другие поля
+    const normalizedData = {
+      ...resultData,
+      total_duration: resultData.total_duration || 0,
+      total_meters: resultData.total_meters || 0,
+      total_cost: resultData.total_cost || 0,
+      walk_time: resultData.walk_time || 0,
+      visit_time: resultData.visit_time || 0,
+      route_name: resultData.route_name || "Обновленный маршрут"
+    }
+    
+    return {
+      status: "success",
+      data: normalizedData
+    }
+    
+  } catch (error) {
+    console.error("[Frontend] addFoodPoint catch error:", error)
+    return {
+      status: "error",
+      error: error instanceof Error ? error.message : "Network error"
+    }
+  } finally {
+    console.log("=== [Frontend] addFoodPoint END ===")
+  }
+}
+
+export async function getFoodFormData(): Promise<ApiResponse<FoodFormResponse>> {
+  console.log("[app] getFoodFormData called")
+  
+  try {
+    // Используем fetchWithAuth для получения данных через нашу API ручку
+    const response = await fetchWithAuth<FoodFormResponse>("/route/food-form/")
+    
+    console.log("[app] getFoodFormData response:", {
+      status: response.status,
+      error: response.error,
+      dataCount: response.data?.interests?.length || 0
+    })
+    
+    return response
+    
+  } catch (error) {
+    console.error("[app] getFoodFormData error:", error)
+    return {
+      status: "error",
+      error: error instanceof Error ? error.message : "Network error"
+    }
+  }
+}
+
+// Point API functions
+
+export async function createPointReview(pointId: string, rating: number, comment?: string): Promise<ApiResponse<{ created: boolean }>> {
+  return fetchWithAuth<{ created: boolean }>(`/api/point/${pointId}/create-review/`, {
+    method: 'POST',
+    body: JSON.stringify({ rating, comment }),
+  });
+}
+
+export async function getPointDetail(pointId: string): Promise<ApiResponse<PointDetail>> {
+  return fetchWithAuth<PointDetail>(`/api/point/${pointId}/detail/`);
+}
+
+export async function getPointReviews(pointId: string, page = 1, pageSize = 20): Promise<ApiResponse<PointReviewsResponse>> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    page_size: pageSize.toString(),
+  });
+  return fetchWithAuth<PointReviewsResponse>(`/api/point/${pointId}/reviews/?${params}`);
+}
+
+export async function toggleFavorite(pointId: string): Promise<ApiResponse<{ status: 'added' | 'removed' }>> {
+  return fetchWithAuth<{ status: 'added' | 'removed' }>(`/api/point/${pointId}/favorite/`, {
+    method: 'POST',
+  });
+}
+
+export async function updateFavoriteNote(pointId: string, note: string): Promise<ApiResponse<{ note: string }>> {
+  return fetchWithAuth<{ note: string }>(`/api/point/${pointId}/favorite/note/`, {
+    method: 'POST',
+    body: JSON.stringify({ note }),
+  });
+}
+
+export async function getUserFavorites(): Promise<ApiResponse<FavoritePoint[]>> {
+  return fetchWithAuth<FavoritePoint[]>("/point/favorites/");
+}

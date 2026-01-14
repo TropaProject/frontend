@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-
 import { API_BASE_URL } from "@/lib/config"
 
 export async function GET(request: NextRequest) {
@@ -19,8 +18,9 @@ export async function GET(request: NextRequest) {
     // Получаем параметры запроса
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status")
-    const limit = searchParams.get("limit")
-    const offset = searchParams.get("offset")
+    const limit = searchParams.get("limit") || "100" // По умолчанию 100
+    const page = searchParams.get("page") || "1"
+    const pageSize = searchParams.get("page_size") || "100" // Можно увеличить до 500
     
     // Формируем URL для бэкенда с параметрами
     let backendUrl = `${API_BASE_URL}/user/list`
@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
     
     if (status) params.append("status", status)
     if (limit) params.append("limit", limit)
-    if (offset) params.append("offset", offset)
+    if (page) params.append("page", page)
+    if (pageSize) params.append("page_size", pageSize)
+    
+    // Пробуем добавить все возможные параметры пагинации
+    params.append("page", page)
+    params.append("page_size", "100") // Запрашиваем по 100 за раз
+    params.append("limit", "1000") // Общий лимит
     
     const queryString = params.toString()
     if (queryString) {
@@ -54,7 +60,13 @@ export async function GET(request: NextRequest) {
     if (text) {
       try {
         data = JSON.parse(text)
-        console.log("[app] /api/user/list: backend response data:", data)
+        console.log("[app] /api/user/list: backend response data structure:", {
+          isArray: Array.isArray(data),
+          keys: Object.keys(data),
+          totalCount: data.count || data.total || 0,
+          resultsLength: data.results ? data.results.length : 0,
+          dataLength: data.data ? data.data.length : 0
+        })
       } catch (e) {
         console.error("[app] /api/user/list: JSON parse error:", e)
         console.log("[app] /api/user/list: Raw response:", text.substring(0, 500))
@@ -87,21 +99,29 @@ export async function GET(request: NextRequest) {
     }
 
     // Успешный ответ - проверяем структуру
+    let routesData = []
+    
     if (data.status === "success" && Array.isArray(data.data)) {
       // Бэкенд возвращает правильный формат
-      console.log(`[app] /api/user/list: Success! Found ${data.data.length} routes`)
-      return NextResponse.json({
-        status: "success",
-        data: data.data
-      }, { status: 200 })
-    } else if (Array.isArray(data)) {
-      // Бэкенд может возвращать просто массив
-      console.log(`[app] /api/user/list: Success! Found ${data.length} routes (direct array)`)
-      return NextResponse.json({
-        status: "success",
-        data: data
-      }, { status: 200 })
-    } else {
+      routesData = data.data
+    } 
+    else if (Array.isArray(data)) {
+      // Бэкенд возвращает просто массив
+      routesData = data
+    }
+    else if (data.results && Array.isArray(data.results)) {
+      // Пагинированный ответ Django REST Framework
+      routesData = data.results
+    }
+    else if (data.data && Array.isArray(data.data)) {
+      // Альтернативный формат
+      routesData = data.data
+    }
+    else if (data.items && Array.isArray(data.items)) {
+      // Еще один возможный формат
+      routesData = data.items
+    }
+    else {
       // Неизвестная структура
       console.log("[app] /api/user/list: Unexpected response structure:", data)
       return NextResponse.json({
@@ -110,6 +130,21 @@ export async function GET(request: NextRequest) {
         backend_response: data
       }, { status: 500 })
     }
+    
+    console.log(`[app] /api/user/list: Success! Found ${routesData.length} routes`)
+    
+    // Возвращаем с информацией о пагинации
+    return NextResponse.json({
+      status: "success",
+      data: routesData,
+      pagination: {
+        count: data.count || data.total || routesData.length,
+        next: data.next,
+        previous: data.previous,
+        page: parseInt(page),
+        page_size: parseInt(pageSize)
+      }
+    }, { status: 200 })
     
   } catch (error) {
     console.error("[app] /api/user/list: error:", error)
