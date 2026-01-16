@@ -196,24 +196,56 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
   }
 
   const formatAddedDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString)
-      const now = new Date()
-      const diffTime = Math.abs(now.getTime() - date.getTime())
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      
-      if (diffDays === 1) return "Сегодня"
-      if (diffDays === 2) return "Вчера"
-      if (diffDays <= 7) return `${diffDays} дней назад`
-      
-      return date.toLocaleDateString("ru-RU", { 
-        day: "numeric", 
-        month: "short" 
-      })
-    } catch {
-      return ""
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Сравниваем только даты (без времени)
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const addedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    const diffTime = today.getTime() - addedDate.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+    if (diffDays === 0) {
+      // Сегодня - показываем время
+      return `сегодня в ${date.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })}`;
     }
+    
+    if (diffDays === 1) {
+      // Вчера - показываем время
+      return `вчера в ${date.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })}`;
+    }
+    
+    if (diffDays <= 7) {
+      // От 2 до 7 дней назад
+      const daysAgo = Math.abs(diffDays);
+      const lastDigit = daysAgo % 10;
+      const lastTwoDigits = daysAgo % 100;
+      
+      if (lastDigit === 1 && lastTwoDigits !== 11) return `${daysAgo} день назад`;
+      if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits >= 20)) {
+        return `${daysAgo} дня назад`;
+      }
+      return `${daysAgo} дней назад`;
+    }
+    
+    // Больше недели - показываем дату
+    return date.toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+    }).replace(' г.', '');
+  } catch {
+    return "";
   }
+}
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -741,11 +773,13 @@ console.log("[app] Dashboard: total_distance_km value:", statsResponse.data?.tot
 )}
         
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Calendar className="h-4 w-4" />
-            <span>Добавлено: {formatAddedDate(favorite.added_at)}</span>
-          </div>
+        <div className="flex items-center gap-2 text-gray-600">
+          <Calendar className="h-4 w-4 flex-shrink-0" />
+          <span className="whitespace-nowrap">
+            Добавлено: {formatAddedDate(favorite.added_at)}
+          </span>
         </div>
+      </div>
       </CardContent>
       
       <div className="p-6 pt-0 mt-auto">
