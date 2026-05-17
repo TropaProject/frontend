@@ -1,0 +1,1 @@
+export { ReviewForm } from "@/features/point-review/ui/ReviewForm";
