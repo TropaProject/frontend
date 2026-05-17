@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+<div align="center"><img src = "https://user-images.githubusercontent.com/31413093/197097625-5b3bd3cf-2bd6-4a3a-8059-a1fe9f28100b.svg" height="100px" alt="My Happy SVG"/></div>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h2 align="center">template-vite-react-ts-tailwind</h2>
 
-## Available Scripts
+<div align="center">
+<a href="https://reactjs.org/"><image src="https://img.shields.io/static/v1?label=React&message=19.1.1&style=for-the-badge&labelColor=FFFFFF&logo=react&color=61DAFB"/></a> <a href="https://www.typescriptlang.org/"><image src="https://img.shields.io/static/v1?label=TypeScript&message=5.8.3&style=for-the-badge&labelColor=FFFFFF&logo=typescript&color=3178C6"/></a> <a href="https://tailwindcss.com/"><image src="https://img.shields.io/static/v1?label=Tailwind%20CSS&message=4.1.12&style=for-the-badge&labelColor=FFFFFF&logo=tailwindcss&color=06B6D4"/></a> <a href="https://vite.dev/"><image src="https://img.shields.io/static/v1?label=Vite&message=7.1.4&style=for-the-badge&labelColor=FFFFFF&logo=vite&color=646CFF"/></a>
+</div>
 
-In the project directory, you can run:
+## Introduction
 
-### `npm start`
+A starter [Vite](https://vitejs.dev/) template having:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- Multiple [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/) plugins installed
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+> [!IMPORTANT]
+> 
+> The latest code of this template has updated Vite to version 7.0+, which requires [Node.js](https://nodejs.org/) version 20.19+ or 22.12+. Please upgrade if your package manager warns about it. Or you can use [this release](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/releases/tag/release-2025.03.27) which is vite@5 and works with Node.js 18 or 20.
+> 
+> 该模板的最新代码中，已经将 Vite 的版本更新到了 7.0+，需要 20.19+ 或 22.12+ 版本的 [Node.js](https://nodejs.org/)。当你的包管理器发出警告时，请注意升级你的 Node.js 版本。如果你需要 vite@5，请使用[这个版本](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/releases/tag/release-2025.03.27)，可兼容 Node.js 18 或 20。
 
-### `npm test`
+> [!TIP]
+> 
+> This code repository may occasionally update its dependency versions. If the dependency versions in the latest code do not meet your expectations, please go to [Tags](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/tags) section to download a previous version of this template. I will display the dependencies used in each Tag, please choose the one you need.
+> 
+> 这个代码仓库可能会不定期更新其依赖包的版本。如果最新代码中依赖的版本不符合你的期望，请移步[Tags](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/tags)下载之前的模板。每个Tag中使用的依赖都会展示在Tag详情中，请选择你需要的版本。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Usage
 
-### `npm run build`
+> [!TIP]
+> 
+> The fastest way to use this template is to click the “Use this template” button on the top right of this repository. It will help you create a new repository quickly, and you can make any modifications to your own repository. If you still want to download this template separately, please continue reading.
+> 
+> 使用该模板的最快方式，就是点击本仓库右上角的“使用该模板”按扭。这帮助你使用该模板迅速创建一个新的仓库，然后你可以对自己的仓库进行任何修改。如果你仍然希望单独下载此模板，可继续往下读。
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+If you need a copy of this repository. You can [download](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/archive/refs/heads/main.zip) a copy as zip but [tiged](https://github.com/tiged/tiged) is recommended.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+After you installed tiged, please excute the following commands:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```sh
+$ cd path-to-save-your-project
+$ tiged royrao2333/template-vite-react-ts-tailwind your-project-name
+```
 
-### `npm run eject`
+After getting a copy of this repository, you can use your package manager to install dependecies:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```sh
+$ cd path-to-your-project
+$ pnpm install
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# npm install
+# yarn install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Let's run!
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```sh
+$ pnpm run dev
 
-## Learn More
+# npm run dev
+# yarn run dev
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+> We've already implemented some recommended configurations in `eslint.config.mjs`, `prettier.config.mjs`. Feel free to edit them if you have your own preferences.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Feel free to dive in! [Open an issue](https://github.com/RoyRao2333/template-vite-react-ts-tailwind/issues/new) or submit PRs.
