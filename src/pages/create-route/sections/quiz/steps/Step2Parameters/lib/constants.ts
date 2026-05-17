@@ -50,7 +50,7 @@ export const step2_text = {
 
 export const range_limits = {
     radius: { min: 1, max: 10, step: 1 },
-    duration: { min: 1, max: 4, step: 1 },
+    duration: { min: 1, max: 6, step: 1 },
     budget: { min: 1, max: 4, step: 1 },
 } as const;
 
@@ -82,7 +82,7 @@ export const getBudgetText = (val: number) => {
 };
 
 export const getDurationText = (val: number) => {
-    const labels: Record<number, string> = { 1: 'час', 2: 'часа', 3: 'часа', 4: 'часа' };
+    const labels: Record<number, string> = { 1: 'час', 2: 'часа', 3: 'часа', 4: 'часа', 5: 'часов', 6: 'часов' };
     return `${val} ${labels[val] || 'часов'}`;
 };
 
