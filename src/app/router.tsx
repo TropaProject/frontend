@@ -22,6 +22,9 @@ const UserRoutesPage = lazy(() => import('@/pages/user/routes'))
 const UserFavouritePlacesPage = lazy(() => import('@/pages/user/favourite-places'))
 const UserStatsPage = lazy(() => import('@/pages/user/stats'))
 const UserSettingsPage = lazy(() => import('@/pages/user/settings'))
+const PrivacyPolicyPage = lazy(() => import('@/pages/privacy-policy'))
+const LegalPage = lazy(() => import('@/pages/legal'))
+const NotFoundPage = lazy(() => import('@/pages/not-found'))
 
 
 export const router = createBrowserRouter([
@@ -79,6 +82,9 @@ export const router = createBrowserRouter([
 
                         ]
                     },
+                    { path: 'privacy', element: <PrivacyPolicyPage /> },
+                    { path: 'legal', element: <LegalPage /> },
+                    { path: '*', element: <NotFoundPage /> },
                 ]
             }
         ],
