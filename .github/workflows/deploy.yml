@@ -20,31 +20,23 @@ jobs:
         with:
           node-version: 20
 
-      - name: Write .env and build
+      - name: Install dependencies and build
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
           npm ci
           npm run build
 
-      - name: Copy files to server
+      - name: Copy all files to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: 5.129.193.251
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".next,public,package.json,package-lock.json,next.config.mjs,.env"
+          source: ".next,public,package.json,package-lock.json,next.config.mjs,.env,app,components,lib,hooks,styles"
           target: "/opt/tropa-frontend"
+          overwrite: true
 
-      - name: Upload .env to server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: 5.129.193.251
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "${{ secrets.ENV_FILE }}" > /opt/tropa-frontend/.env
-
-      - name: Install dependencies and restart frontend
+      - name: Deploy and restart application
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 5.129.193.251
@@ -52,18 +44,37 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/tropa-frontend
+            
+            # Устанавливаем зависимости
             npm ci --production=false
-            npx prisma generate || true
+            
+            # Останавливаем старый процесс если есть
             pm2 delete mytropa-frontend || true
+            
+            # Запускаем приложение
             pm2 start npm --name "mytropa-frontend" -- run start
+            
+            # Сохраняем конфигурацию PM2
             pm2 save
+            pm2 startup || true
+            
+            # Проверяем статус
             pm2 status
+            
+            # Перезапускаем Nginx
+            systemctl restart nginx
+            
+            # Проверяем что приложение отвечает
+            sleep 3
+            curl -I http://localhost:3000 || true
 
-      - name: Restart Nginx
+      - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 5.129.193.251
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            systemctl restart nginx
+            cd /opt/tropa-frontend
+            pm2 logs mytropa-frontend --lines 10 --nostream
+            curl -I https://mytropa.ru
