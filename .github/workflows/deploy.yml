@@ -32,7 +32,7 @@ jobs:
           host: 5.129.193.251
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".next,public,package.json,package-lock.json,next.config.js"
+          source: ".next,public,package.json,package-lock.json,next.config.mjs,.env"
           target: "/opt/tropa-frontend"
 
       - name: Upload .env to server
@@ -44,7 +44,7 @@ jobs:
           script: |
             echo "${{ secrets.ENV_FILE }}" > /opt/tropa-frontend/.env
 
-      - name: Restart frontend via PM2
+      - name: Install dependencies and restart frontend
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 5.129.193.251
@@ -52,6 +52,18 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/tropa-frontend
-            npm ci
-            pm2 restart mytropa-frontend || pm2 start npm --name mytropa-frontend -- run start
+            npm ci --production=false
+            npx prisma generate || true
+            pm2 delete mytropa-frontend || true
+            pm2 start npm --name "mytropa-frontend" -- run start
             pm2 save
+            pm2 status
+
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 5.129.193.251
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            systemctl restart nginx
