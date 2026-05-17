@@ -1,7 +1,6 @@
 // pages/user/profile/ui/ProfileSuggestedRoutesSlider.tsx
 import BaseSlider from "@/shared/components/ui/sliders/BaseSlider"
 import clsx from "clsx"
-import type { RouteListItem } from "@/shared/api/user/types"
 import type { HTMLAttributes } from "react"
 import { RouteEntityCardContainer } from "@/entities/route/ui/RouteEntityCardContainer"
 import type { PublicRouteDTO } from "@/shared/api/route/types"

@@ -4,8 +4,6 @@ import type {
     RouteDetailResponse,
     EditRouteStatusRequest,
     EditRouteStatusResponse,
-    CancelRouteRequest,
-    CancelRouteResponse,
     RouteFeedbackRequest,
     RouteFeedbackResponse,
     AddFoodPointRequest,
