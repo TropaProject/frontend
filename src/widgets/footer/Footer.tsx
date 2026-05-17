@@ -14,8 +14,8 @@ export function Footer({ className }: { className?: string }) {
     ]
 
     const legalLinks = [
-        { label: 'Политика конфиденциальности', href: '#privacy' },
-        { label: 'Юридическая информация', href: '#legal' },
+        { label: 'Политика конфиденциальности', href: '/privacy' },
+        { label: 'Юридическая информация', href: '/legal' },
     ]
 
     return (
