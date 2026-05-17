@@ -53,5 +53,5 @@ jobs:
           script: |
             cd /opt/tropa-frontend
             npm ci
-            pm2 restart mytropa-frontend || pm2 start npm --name mytropa-frontend -- start
+            pm2 restart mytropa-frontend || pm2 start npm --name mytropa-frontend -- run dev
             pm2 save
