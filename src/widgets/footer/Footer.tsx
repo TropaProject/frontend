@@ -65,7 +65,7 @@ export function Footer({ className }: { className?: string }) {
 
                     <div className="order-3 col-span-1 text-secondary desktop:text-background flex flex-col justify-end desktop:justify-start gap-3 text-body-sm-medium w-max desktop:order-4 desktop:col-span-3 desktop:row-start-2">
                         <a href='https://julys-design.ru/'>Дизайн сайта</a>
-                        <p>© Все права защищены, 2025</p>
+                        <p>© Все права защищены, 2026</p>
                     </div>
 
                     <nav className="order-4 col-span-1 text-secondary desktop:text-background flex flex-col justify-end desktop:justify-start w-max desktop:order-5 desktop:col-span-3 desktop:col-start-14 desktop:row-start-2">
