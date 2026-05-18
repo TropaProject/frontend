@@ -34,11 +34,11 @@ export const AppLayout = () => {
         <div className="flex min-h-screen relative flex-col max-w-[clamp(360px,100%,1280px)] mx-auto bg-background">
             {createPortal(headerContent, document.body)}
             
-            <div className='pt-10'>
+           <div className='pt-10'>
                 <Outlet />
             </div>
 
-            <Footer/>
+            <Footer />
         </div>
     )
 }

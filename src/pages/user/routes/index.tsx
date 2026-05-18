@@ -80,7 +80,7 @@ const UserRoutesPage = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col w-full tablet:min-h-120">
+            <div className="flex flex-col w-full tablet:min-h-130 gap-6">
                 {activeRoutes.length > 0 ? (
                 <>
                     {isAboveTablet ? (
@@ -143,7 +143,7 @@ const UserRoutesPage = () => {
                 onClose={() => setIsFilterOpen(false)}
             />
 
-            <div className="flex flex-col w-full tablet:min-h-120">
+            <div className="flex flex-col w-full tablet:min-h-130 gap-6 ">
                 {allRoutes.length > 0 ? (
                 <>
                     <RoutesGrid className="grid-cols-2" routes={allRoutes} />

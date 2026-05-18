@@ -61,6 +61,7 @@ const UserFavouritePlacesPage = () => {
             ) : (
                 <EmptyState
                     message="У тебя пока нет любимых мест :("
+                    className="my-auto"
                 />
             )}
 
