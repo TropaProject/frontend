@@ -34,8 +34,8 @@ export const STATS_REWARDS = {
         items: [
             { title: "Пруфы прилагаются", description: "Первый отзыв на маршрут", obtained: true },
             { title: "Сфоткал — значит был", description: "Опубликовано 10 отзывов", obtained: false },
-            { title: "тут название", description: "Опубликовано 50 отзывов", obtained: false },
-            { title: "тут название", description: "Опубликовано 100 отзывов", obtained: false },
+            { title: "Легенда отзывов", description: "Опубликовано 50 отзывов", obtained: false },
+            { title: "Неоспоримый авторитет", description: "Опубликовано 100 отзывов", obtained: false },
         ]
     },
     PLACE_REVIEWS: {
