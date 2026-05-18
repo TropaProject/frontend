@@ -19,8 +19,8 @@ const UserProfilePage = () => {
 
     const { data: user, isLoading: userLoading, isError: userError } = useUserProfile();
     const { data: stats, isLoading: statsLoading } = useUserStatistics();
-    const { data: userPublicRoutesData, isLoading: userPublicRoutesLoading } = useUserPublicRoutes(6);
-    const { data: recommendedRoutes, isLoading: recommendedLoading } = useRecommendedRoutes(6);
+    const { data: userPublicRoutesData, isLoading: userPublicRoutesLoading } = useUserPublicRoutes();
+    const { data: recommendedRoutes, isLoading: recommendedLoading } = useRecommendedRoutes();
 
     const userPublicRoutes = userPublicRoutesData?.routes ?? [];
     const recommended = recommendedRoutes ?? [];

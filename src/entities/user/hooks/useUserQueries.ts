@@ -64,7 +64,7 @@ export const useUserAllRoutes = (limit = 6) => {
     });
 };
 
-export const useUserPublicRoutes = (limit = 6) => {
+export const useUserPublicRoutes = (limit = 0) => {
     return useInfiniteQuery({
         queryKey: ["user", "routes", "public", { limit }],
         queryFn: ({ pageParam = 0 }) =>
@@ -106,7 +106,7 @@ export const usePublicRoutes = (limit = 6) => {
     });
 };
 
-export const useRecommendedRoutes = (limit = 6, cityId?: string) => {
+export const useRecommendedRoutes = (limit = 0, cityId?: string) => {
     return useQuery({
         queryKey: ["routes", "recommended", { limit, cityId }],
         queryFn: () => routeApi.getRecommendedRoutes({ limit, exclude_copied: true, city_id: cityId }),
