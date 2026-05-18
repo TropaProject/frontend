@@ -20,7 +20,7 @@ export function Footer({ className }: { className?: string }) {
 
     return (
         <footer className={className}>
-            <div className="relative mx-auto w-full max-w-mobile overflow-hidden -mt-24 pt-24 desktop:pb-68">
+            <div className="relative mx-auto flex w-full max-w-mobile overflow-hidden -mt-24 pt-24 desktop:pb-68">
                 <FooterBg />
 
                 <div className="relative text-text w-max desktop:text-background z-20 mx-auto grid grid-cols-[auto_auto] px-4 mt-10 mb-10 gap-y-10 gap-x-2 xs:gap-x-6 justify-items-start desktop:mt-28 desktop:px-10 desktop:grid-cols-16 desktop:grid-rows-2 desktop:gap-y-6 desktop:gap-x-16">

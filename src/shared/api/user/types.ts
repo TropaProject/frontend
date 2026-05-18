@@ -5,8 +5,8 @@ export interface UserDTO {
     id: number;
     email: string;
     username: string;
-    date_joined: string;
     avatar?: string | null;
+    date_joined: string;
 }
 
 export type UserResponse = ApiResponse<UserDTO>;
@@ -24,6 +24,26 @@ export interface UserStatistics {
 }
 
 export type UserStatisticsResponse = ApiResponse<UserStatistics>;
+
+export interface PublicUserDTO extends UserDTO {
+    statistics: UserStatistics;
+    public_routes_total_count: number;
+    public_routes: RouteListItem[];
+}
+
+export type PublicUserResponse = ApiResponse<PublicUserDTO>;
+
+export interface UserStatistics {
+    total_routes: number;
+    completed_routes: number;
+    active_routes: number;
+    total_duration_minutes: number;
+    total_distance_km: number;
+    total_cost: number;
+    unique_places: number;
+    favourite_city: string | null;
+    last_activity: string | null;
+}
 
 export type RouteStatus = "going" | "done" | "cancelled";
 
