@@ -46,7 +46,7 @@ export const AuthLayout = ({ children, subtitle }: AuthLayoutProps) => {
     const cartScrollX = useTransform(smoothProgress, [0, 1], [0, 50]);
 
     return (
-        <PageWrapper className="mb-0 xs:mb-32 desktop:-mb-24">
+        <PageWrapper className="mb-0 xs:mb-32 desktop:mb-0">
             <section ref={sectionRef} className="overflow-hidden mx-auto w-full flex gap-5 flex-col items-center pt-32 pb-18 desktop:pb-0 relative">
 
                 <motion.div
