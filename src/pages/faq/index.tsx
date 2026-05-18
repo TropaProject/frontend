@@ -82,7 +82,7 @@ const FAQPage = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 desktop:grid-cols-16">
+            <div className="grid grid-cols-1 w-full desktop:grid-cols-16">
                 <div className="px-2.5 desktop:px-10 flex flex-col w-full gap-2 z-10 desktop:col-span-10 desktop:mr-3 max-w-200">
                     {faqData.map((item) => (
                         <Accordion key={item.id} number={item.id} title={item.question}>

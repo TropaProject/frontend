@@ -13,6 +13,15 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Five Minutes';
+  src: url('/fonts/FiveMinutes.otf') format('opentype');
+  font-weight: 400;
+
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Colors - Основная палитра */
   --color-primary: #ff3f6c;
@@ -471,4 +480,24 @@ h4 {
   .safari-leading-12 {
     line-height: 3.5rem;
   }
+}
+
+
+/* index.css или global.css */
+@supports (-webkit-touch-callout: none) {
+    .filter-modal-fix {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+    }
+    
+    body:has(.filter-open) {
+        position: fixed !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
 }

@@ -59,7 +59,7 @@ const UserRoutesPage = () => {
     return (
         <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500 sm:max-w-2/3 sm:mx-auto tablet:max-w-none">
             {/* Активные маршруты */}
-            <div className="flex flex-col gap-6 desktop:flex-row desktop:justify-between">
+            <div className="flex flex-col gap-6 desktop:flex-row desktop:justify-between ">
                 <h1 className="text-heading-2xl! text-secondary">Активные маршруты</h1>
 
                 <div className="grid grid-cols-3 desktop:flex gap-2.5">
@@ -80,7 +80,8 @@ const UserRoutesPage = () => {
                 </div>
             </div>
 
-            {activeRoutes.length > 0 ? (
+            <div className="flex flex-col w-full tablet:min-h-120">
+                {activeRoutes.length > 0 ? (
                 <>
                     {isAboveTablet ? (
                         <>
@@ -115,8 +116,9 @@ const UserRoutesPage = () => {
                     )}
                 </>
             ) : (
-                <EmptyState message="У тебя пока нет активных маршрутов :(" />
+                <EmptyState message="У тебя пока нет активных маршрутов :(" className="my-auto" />
             )}
+            </div>
 
             {/* Все маршруты */}
             <div className="w-full flex items-start justify-between relative">
@@ -141,7 +143,8 @@ const UserRoutesPage = () => {
                 onClose={() => setIsFilterOpen(false)}
             />
 
-            {allRoutes.length > 0 ? (
+            <div className="flex flex-col w-full tablet:min-h-120">
+                {allRoutes.length > 0 ? (
                 <>
                     <RoutesGrid className="grid-cols-2" routes={allRoutes} />
                     {allHasMore && (
@@ -155,8 +158,9 @@ const UserRoutesPage = () => {
                     )}
                 </>
             ) : (
-                <EmptyState message="Здесь пока ничего нет :(" />
+                <EmptyState message="Здесь пока ничего нет :(" className="my-auto"/>
             )}
+            </div>
         </div>
     );
 };

@@ -37,7 +37,7 @@ const HomePopularRoutes = (props: React.HTMLAttributes<HTMLElement>) => {
     const featherY = useTransform(smoothProgress, [0, 1], [0, 70]);
     const featherRotate = useTransform(smoothProgress, [0, 1], [10, -10]);
 
-    const { data: recommendedRoutes, isLoading: recommendedLoading } = useRecommendedRoutes(6);
+    const { data: recommendedRoutes, isLoading: recommendedLoading } = useRecommendedRoutes();
 
     return (
         <section ref={sectionRef} className={`${props.className} overflow-hidden flex flex-col w-full max-w-mobile pt-4 lg:pt-12 lg:-mt-12 desktop:px-10 items-start pb-26 relative`}>

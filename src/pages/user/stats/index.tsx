@@ -6,6 +6,7 @@ import { StatsRewardCard } from "@/pages/user/stats/ui/StatsRewardCard";
 import { useUserStatistics } from "@/entities/user/hooks/useUserQueries";
 import { Loader } from "@/shared/lib/feedback/Loader";
 import { FormError } from "@/shared/lib/feedback/FormError";
+import clsx from "clsx";
 
 const UserStatsPage = () => {
     const { data: stats, isLoading, isError } = useUserStatistics();
@@ -34,7 +35,9 @@ const UserStatsPage = () => {
 
                 <ProfileFavouriteCity
                     cityName={stats.favourite_city}
-                    className="py-6 col-span-1 tablet:col-span-2 max-h-max pb-48 -mb-2 desktop:mt-0! desktop:pb-54 [&_img]:-bottom-10 desktop:[&_img]:min-w-90"
+                    className={clsx(stats.favourite_city && ' -mb-2 desktop:mt-0! pb-48 desktop:pb-54 [&_img]:-bottom-10',
+                        "py-6 col-span-1 tablet:col-span-2 max-h-max desktop:[&_img]:min-w-90"
+                    )}
                 />
             </div>
 

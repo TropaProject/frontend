@@ -5,6 +5,7 @@ import type {
     UserStatisticsResponse,
     UserRoutesListResponse,
     RouteStatus,
+    PublicUserResponse,
 } from "@/shared/api/user/types";
 
 export const userApi = {
@@ -36,8 +37,8 @@ export const userApi = {
         return response.data;
     },
 
-    getUserById: async (userId: number): Promise<UserResponse> => {
-        const response = await api.get<UserResponse>(`/user/${userId}/`);
+    getUserById: async (userId: number): Promise<PublicUserResponse> => {
+        const response = await api.get<PublicUserResponse>(`/user/${userId}/`);
         return response.data;
     },
 };

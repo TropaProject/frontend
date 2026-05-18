@@ -31,13 +31,13 @@ export const CreateRouteHero = ({ currentStep, totalSteps, className, ...props }
             <img
                 src={HeroImgLeft}
                 alt="изоборажение на фоне"
-                className='absolute -left-10 bottom-2 desktop:left-0 desktop:bottom-16 w-full object-contain max-w-36 xs:max-w-48 desktop:max-w-60'
+                className='absolute -left-10 mix-blend-darken bottom-2 desktop:left-0 desktop:bottom-16 w-full object-contain max-w-36 xs:max-w-48 desktop:max-w-60'
             />
 
             <img
                 src={HeroImgRight}
                 alt="изоборажение на фоне"
-                className='absolute -right-10 desktop:right-0 desktop:bottom-16 bottom-2 w-full object-contain max-w-36 xs:max-w-48 desktop:max-w-60'
+                className='absolute -right-10 mix-blend-darken desktop:right-0 desktop:bottom-16 bottom-2 w-full object-contain max-w-36 xs:max-w-48 desktop:max-w-60'
             />
         </section>
     );

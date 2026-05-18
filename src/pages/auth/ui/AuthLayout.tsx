@@ -46,7 +46,7 @@ export const AuthLayout = ({ children, subtitle }: AuthLayoutProps) => {
     const cartScrollX = useTransform(smoothProgress, [0, 1], [0, 50]);
 
     return (
-        <PageWrapper className="-mb-24 xs:-mb-32 sm:mb-0">
+        <PageWrapper className="mb-0 xs:mb-32 desktop:-mb-24">
             <section ref={sectionRef} className="overflow-hidden mx-auto w-full flex gap-5 flex-col items-center pt-32 pb-18 desktop:pb-0 relative">
 
                 <motion.div
@@ -145,12 +145,12 @@ export const AuthLayout = ({ children, subtitle }: AuthLayoutProps) => {
                 </div>
 
                 {/* Статичные картинки */}
-                <picture className="absolute left-0 top-4 desktop:-top-8 z-0">
+                <picture className="absolute mix-blend-darken left-0 top-4 desktop:-top-8 z-0">
                     <source media="(min-width: 1280px)" srcSet={HeroImgLeftDesktop} />
                     <img src={HeroImgLeft} alt="изображение на фоне" className="w-full object-contain max-w-36 xs:max-w-48 sm:max-w-64 desktop:max-w-110" />
                 </picture>
 
-                <picture className="absolute right-0 top-4 desktop:-top-6 z-0">
+                <picture className="absolute mix-blend-darken right-0 top-4 desktop:-top-6 z-0">
                     <source media="(min-width: 1280px)" srcSet={HeroImgRightDesktop} />
                     <img src={HeroImgRight} alt="изображение на фоне" className="w-full object-contain max-w-36 xs:max-w-48 sm:max-w-64 desktop:max-w-96" />
                 </picture>

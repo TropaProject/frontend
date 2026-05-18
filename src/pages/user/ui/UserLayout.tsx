@@ -53,7 +53,7 @@ export const UserLayout = () => {
     const isFilterablePage = pathname === '/user/favourite-places';
     const isUserRoutesPage = pathname === '/user/routes'
     return (
-        <PageWrapper className="flex-row items-start px-2.5 tablet:px-10 pb-40 tablet:pt-20 relative overflow-hidden!">
+        <PageWrapper className="flex-row items-start z-100 px-2.5 tablet:px-10 pb-40 tablet:pt-20 relative overflow-hidden!">
             <aside className={clsx(isUserRoutesPage && 'mb-420 lg:mb-300', "hidden tablet:flex flex-col -mt-0.5 gap-2 w-45 shrink-0 rounded-2xl z-20 relative")}>
                 <nav className="flex flex-col -space-y-4">
                     {USER_CABINET_LINKS.map((item, index) => {
