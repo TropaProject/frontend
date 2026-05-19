@@ -8,7 +8,7 @@ const LegalPage = () => {
                 <div className="relative z-10 w-full">
                     <p className="text-sm uppercase tracking-[0.3em] text-primary font-semibold mb-3">Юридическая информация</p>
                     <h1 className="text-heading-xl tablet:text-heading-4xl desktop:text-heading-5xl text-primary leading-tight">
-                        Все официальные правила и условия использования сервиса Тропа
+                        Правила и условия использования сервиса &laquo;Тропа&raquo;
                     </h1>
                 </div>
 
