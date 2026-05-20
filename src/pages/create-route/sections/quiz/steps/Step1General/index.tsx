@@ -1,6 +1,6 @@
 // pages/create-route/sections/quiz/steps/Step1General/index.tsx
 import BaseCard from '@/shared/components/ui/cards/BaseCard';
-import { useMemo, type HTMLAttributes } from 'react';
+import { useMemo, type HTMLAttributes, useEffect } from 'react';
 import type { CityDTO } from '@/shared/api/create-route/types';
 import MoscowImg from '@/pages/create-route/sections/quiz/steps/Step1General/assets/images/moscow.jpg';
 import SpbImg from '@/pages/create-route/sections/quiz/steps/Step1General/assets/images/spb.jpg';
@@ -27,6 +27,14 @@ export const Step1General = ({ cities, className, ...props }: Props) => {
     const { updateFormData, formData } = useCreateRouteStore();
     const selectedCityId = formData.cityId;
 
+    useEffect(() => {
+        if (!formData.cityId && cities.length > 0) {
+            updateFormData({
+                cityId: cities[0].id,
+            });
+        }
+    }, [cities, formData.cityId, updateFormData]);
+    
     const cityCards = useMemo(() => [
         ...cities.map((city) => ({
             id: city.id,
