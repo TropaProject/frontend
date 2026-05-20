@@ -93,7 +93,7 @@ export const useInteractiveMap = ({
             return;
         }
         if (!isWithinBounds(coords)) {
-            setErrorMessage('Точка находится за пределами выбранного города');
+            setErrorMessage('Точка находится за пределами выбранного города или мы еще не добавили точки для этого района. Пожалуйста, выбери другой адрес!');
             return;
         }
 

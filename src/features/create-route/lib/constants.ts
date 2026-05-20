@@ -11,10 +11,10 @@ export const BUDGET_MAP: Record<number, string> = {
 
 export const CITY_BOUNDS: Record<string, { min_lat: number; max_lat: number; min_lon: number; max_lon: number }> = {
     moscow: {
-        min_lat: 55.574655,
-        max_lat: 55.913052,
-        min_lon: 37.371297,
-        max_lon: 37.834939,
+        min_lat: 55.723242,
+        max_lat: 55.778355,
+        min_lon: 37.579460,
+        max_lon: 37.664025,
     },
     petersburg: {
         min_lat: 59.800000,
