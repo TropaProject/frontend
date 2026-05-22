@@ -26,11 +26,11 @@ const BaseTextArea = ({
                 </span>
             )}
 
-            <div className="relative min-h-50 w-full flex p-4 pt-5">
+            <div className={clsx("relative w-full py-0.5", className)}>
                 <TextAreaBorder
                     preserveAspectRatio='none'
                     className={clsx(
-                        "absolute inset-0 w-full h-full pointer-events-none",
+                        "absolute inset-0 w-full h-full pointer-events-none transition-colors z-10",
                         error ? "text-primary" : "text-secondary"
                     )}
                 />
@@ -38,10 +38,8 @@ const BaseTextArea = ({
                 <textarea
                     ref={ref}
                     className={clsx(
-                        "relative z-10 w-full bg-transparent outline-none border-none resize-none",
-                        "text-body-xs tablet:text-body-sm leading-[0.8]! text-text placeholder:text-text/80",
-                        "scrollbar-hidden",
-                        className
+                        "relative z-20 w-full h-full min-h-[140px] bg-transparent outline-none border-none resize-none rounded-3xl px-4 py-4",
+                        "text-body-xs tablet:text-body-sm leading-[0.8]! text-text placeholder:text-text/80 scrollbar-hidden"
                     )}
                     {...props}
                 />

@@ -150,6 +150,33 @@ export interface VisibilityResponse {
     };
 }
 
+export interface CitySuggestionRequest {
+    name: string;
+    country: string;
+    comment: string;
+}
+
+export interface CitySuggestionResponse {
+    status: "success";
+    created: boolean;
+    voted_now: boolean;
+    data: {
+        id: string;
+        name: string;
+        country: string;
+        comment: string;
+        status: string;
+        votes_count: number;
+        has_voted: boolean;
+        created_by: {
+            id: number;
+            username: string;
+        };
+        created_at: string;
+        updated_at: string;
+    };
+}
+
 // GET /route/public/
 export interface PublicRouteDTO extends RouteListItem {
     total_meters: number | null;

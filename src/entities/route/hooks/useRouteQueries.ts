@@ -1,8 +1,8 @@
 // entities/route/hooks/useRouteQueries.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { routeApi } from "@/shared/api/route";
-import type { EditRouteStatusRequest, RouteFeedbackRequest, AddFoodPointRequest, CopyPublicRouteRequest } from "@/shared/api/route/types";
 import { useNavigate } from "react-router-dom";
+import { routeApi } from "@/shared/api/route";
+import type { AddFoodPointRequest, CopyPublicRouteRequest, CitySuggestionRequest, EditRouteStatusRequest, RouteFeedbackRequest } from "@/shared/api/route/types";
 
 export const useRouteDetail = (routeId: string) => {
     return useQuery({
@@ -71,6 +71,12 @@ export const useRouteVisibility = () => {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["route", variables.route_id] });
         },
+    });
+};
+
+export const useCitySuggestion = () => {
+    return useMutation({
+        mutationFn: (data: CitySuggestionRequest) => routeApi.suggestCity(data),
     });
 };
 
