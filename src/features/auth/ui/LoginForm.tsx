@@ -1,6 +1,7 @@
 // features/auth/ui/LoginForm.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import BaseInput from "@/shared/components/ui/inputs/BaseInput";
 import BaseButton from "@/shared/components/ui/buttons/BaseButton";
 import { loginSchema, type LoginSchema } from "@/features/auth/model/validation";
@@ -10,6 +11,7 @@ import { FormError, useFormError } from "@/shared/lib/feedback/FormError";
 
 export const LoginForm = () => {
     const { login } = useAuth();
+    const navigate = useNavigate();
     const errorMessage = useFormError(login, 'Ошибка входа');
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
@@ -54,6 +56,14 @@ export const LoginForm = () => {
             >
                 Войти
             </BaseButton>
+
+            <button
+                type="button"
+                onClick={() => navigate('/auth/register')}
+                className="text-sm text-gray-600 hover:text-gray-800 transition-colors mt-4"
+            >
+                Нет аккаунта? Зарегистрироваться
+            </button>
         </form>
     );
 };

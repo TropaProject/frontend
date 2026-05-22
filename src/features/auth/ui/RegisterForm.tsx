@@ -1,6 +1,7 @@
 // features/auth/ui/RegisterForm.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import BaseInput from "@/shared/components/ui/inputs/BaseInput";
 import BaseButton from "@/shared/components/ui/buttons/BaseButton";
 import { registerSchema, type RegisterSchema } from "@/features/auth/model/validation";
@@ -10,6 +11,7 @@ import { FormError, useFormError } from "@/shared/lib/feedback/FormError";
 
 export const RegisterForm = () => {
     const { register: authRegister } = useAuth();
+    const navigate = useNavigate();
     const errorMessage = useFormError(authRegister, 'Ошибка регистрации');
 
     const {
@@ -75,6 +77,14 @@ export const RegisterForm = () => {
             >
                 Зарегистрироваться
             </BaseButton>
+
+            <button
+                type="button"
+                onClick={() => navigate('/auth/login')}
+                className="text-sm text-gray-600 hover:text-gray-800 transition-colors mt-4"
+            >
+                Есть аккаунт? Войти
+            </button>
         </form>
     );
 };

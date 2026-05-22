@@ -4,7 +4,7 @@ export const STATS_REWARDS = {
     ROUTES: {
         title: "За маршруты",
         items: [
-            { title: "Первый выход из берлоги", description: "Первый маршрут", obtained: true },
+            { title: "Первый выход из берлоги", description: "Первый маршрут", obtained: false },
             { title: "Подозрительная активность", description: "Третий маршрут", obtained: false },
             { title: "Мои сородичи уже узнают тебя", description: "Десятый маршрут", obtained: false },
         ]
@@ -12,7 +12,7 @@ export const STATS_REWARDS = {
     DEVELOPER_CHOICE: {
         title: "За посещение локаций «Выбор разработчиков»",
         items: [
-            { title: "Открытие года", description: "Первое посещение", obtained: true },
+            { title: "Открытие года", description: "Первое посещение", obtained: false },
             { title: "Узнал секреты города", description: "5 локаций", obtained: false },
             { title: "Нашёл скрытые локации", description: "10 локаций", obtained: false },
             { title: "Видел больше, чем простые смертные", description: "20 локаций", obtained: false },
@@ -23,7 +23,7 @@ export const STATS_REWARDS = {
     ROUTE_REVIEWS: {
         title: "За отзывы на маршруты",
         items: [
-            { title: "Скромняга", description: "Первый отзыв на маршрут", obtained: true },
+            { title: "Скромняга", description: "Первый отзыв на маршрут", obtained: false },
             { title: "Знаток города", description: "Опубликовано 10 отзывов", obtained: false },
             { title: "Репортёр", description: "Опубликовано 50 отзывов", obtained: false },
             { title: "Помощник разработчиков", description: "Опубликовано 100 отзывов", obtained: false },
@@ -32,7 +32,7 @@ export const STATS_REWARDS = {
     PHOTO_REVIEWS: {
         title: "За фотоотзывы на Локации",
         items: [
-            { title: "Пруфы прилагаются", description: "Первый отзыв на маршрут", obtained: true },
+            { title: "Пруфы прилагаются", description: "Первый отзыв на маршрут", obtained: false },
             { title: "Сфоткал — значит был", description: "Опубликовано 10 отзывов", obtained: false },
             { title: "Легенда отзывов", description: "Опубликовано 50 отзывов", obtained: false },
             { title: "Неоспоримый авторитет", description: "Опубликовано 100 отзывов", obtained: false },
@@ -41,7 +41,7 @@ export const STATS_REWARDS = {
     PLACE_REVIEWS: {
         title: "За отзывы на Локации",
         items: [
-            { title: "Высказался", description: "Первый отзыв на локацию", obtained: true },
+            { title: "Высказался", description: "Первый отзыв на локацию", obtained: false },
             { title: "Есть что сказать", description: "Опубликовано 10 отзывов", obtained: false },
             { title: "Комментатор по жизни", description: "Опубликовано 50 отзывов", obtained: false },
             { title: "Лидер мнений", description: "Опубликовано 100 отзывов", obtained: false },

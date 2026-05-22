@@ -15,6 +15,7 @@ interface BaseRewardsCardProps {
     columnsClassName?: string;
     className?: string;
     titleColor?: string;
+    emptyMessage?: string;
 }
 
 export const BaseRewardsCard = ({
@@ -22,8 +23,31 @@ export const BaseRewardsCard = ({
     rewards,
     columnsClassName = "grid-cols-1 desktop:grid-cols-2",
     className,
-    titleColor = 'text-primary'
+    titleColor = 'text-primary',
+    emptyMessage = "Пока нет наград"
 }: BaseRewardsCardProps) => {
+    if (rewards.length === 0) {
+        return (
+            <section className={clsx(className, "flex flex-col w-full h-full relative desktop:w-[500px]")}>
+                <div className="relative z-10 flex flex-col h-full px-6 xs:px-4 lg:px-6 pt-12 pb-6 gap-3">
+                    <h2 className={clsx(titleColor, "text-heading-md! desktop:text-heading-lg!")}>
+                        {title}
+                    </h2>
+                    
+                    <div className="flex flex-col items-center justify-center py-12 text-center min-h-[200px]">
+                        <p className="text-secondary/60 text-body-md">
+                            {emptyMessage}
+                        </p>
+                    </div>
+                </div>
+                <RewardsBg
+                    className="absolute inset-0 z-0 w-full h-full"
+                    preserveAspectRatio="none"
+                />
+            </section>
+        );
+    }
+
     return (
         <section className={clsx(className, "flex flex-col w-full h-full relative desktop:max-w-max")}>
             <div className="relative z-10 flex flex-col h-full px-6 xs:px-4 lg:px-6 pt-12 pb-6 gap-3">

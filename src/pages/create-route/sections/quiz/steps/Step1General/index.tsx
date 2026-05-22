@@ -1,8 +1,9 @@
 // pages/create-route/sections/quiz/steps/Step1General/index.tsx
 import BaseCard from '@/shared/components/ui/cards/BaseCard';
-import { useMemo, type HTMLAttributes, useEffect } from 'react';
+import { useMemo, useState, type HTMLAttributes, useEffect } from 'react';
 import type { CityDTO } from '@/shared/api/create-route/types';
 import MoscowImg from '@/pages/create-route/sections/quiz/steps/Step1General/assets/images/moscow.jpg';
+import { CitySuggestionModal } from '@/features/create-route/ui/CitySuggestionModal';
 import SpbImg from '@/pages/create-route/sections/quiz/steps/Step1General/assets/images/spb.jpg';
 import NewCityImg from '@/pages/create-route/sections/quiz/steps/Step1General/assets/images/new-city.jpg';
 import PlusIcon from '@/pages/create-route/sections/quiz/assets/icons/PlusIcon';
@@ -24,6 +25,7 @@ const CITY_IMAGES: Record<string, string> = {
 
 export const Step1General = ({ cities, className, ...props }: Props) => {
     useScrollToTop();
+    const [isCitySuggestionModalOpen, setIsCitySuggestionModalOpen] = useState(false);
     const { updateFormData, formData } = useCreateRouteStore();
     const selectedCityId = formData.cityId;
 
@@ -34,7 +36,6 @@ export const Step1General = ({ cities, className, ...props }: Props) => {
             });
         }
     }, [cities, formData.cityId, updateFormData]);
-    
     const cityCards = useMemo(() => [
         ...cities.map((city) => ({
             id: city.id,
@@ -68,6 +69,7 @@ export const Step1General = ({ cities, className, ...props }: Props) => {
                                     *:bg-[linear-gradient(178.05deg,_rgba(255,255,255,0)_21.2%,_rgba(255,255,255,0.8)_83.81%)]"
                                     borderColor="text-text"
                                     borderType="combined"
+                                    onClick={() => setIsCitySuggestionModalOpen(true)}
                                 >
                                     <div className="z-100! absolute bottom-0 w-full pb-5 px-5 flex flex-row items-end justify-between">
                                         <h3 className="text-primary leading-[0.9]!">
@@ -98,6 +100,11 @@ export const Step1General = ({ cities, className, ...props }: Props) => {
             </div>
 
             <Step1MapSection />
+
+            <CitySuggestionModal
+                isOpen={isCitySuggestionModalOpen}
+                onClose={() => setIsCitySuggestionModalOpen(false)}
+            />
 
             <CreateRouteStepNavigation />
         </section>

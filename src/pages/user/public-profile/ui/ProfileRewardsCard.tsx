@@ -9,11 +9,37 @@ const mockRewards = [
     { title: "Открытие года", description: "Первое посещение места с пометкой «Выбор разработчиков»", obtained: true },
 ];
 
-export const ProfileRewardsCard = ({ className, columnsClassName, rewardsCount = 6 }: { className?: string, columnsClassName?: string, rewardsCount?: number }) => {
+export const ProfileRewardsCard = ({ 
+    className, 
+    columnsClassName, 
+    rewardsCount = 6,
+    useMockData = false 
+}: { 
+    className?: string, 
+    columnsClassName?: string, 
+    rewardsCount?: number,
+    useMockData?: boolean 
+}) => {
+    const realRewards: typeof mockRewards = [];
+    
+    const rewards = useMockData ? mockRewards.slice(0, rewardsCount) : realRewards;
+    
+    if (rewards.length === 0) {
+        return (
+            <BaseRewardsCard
+                title="Последние награды"
+                rewards={[]}
+                className={className}
+                columnsClassName={columnsClassName}
+                emptyMessage="Пока нет наград"
+            />
+        );
+    }
+    
     return (
         <BaseRewardsCard
             title="Последние награды"
-            rewards={mockRewards.slice(0, rewardsCount)}
+            rewards={rewards}
             className={className}
             columnsClassName={columnsClassName}
         />

@@ -11,6 +11,8 @@ import type {
     FoodFormResponse,
     VisibilityResponse,
     VisibilityRequest,
+    CitySuggestionRequest,
+    CitySuggestionResponse,
     PublicRoutesResponse,
     RecommendedRoutesResponse,
     CopyPublicRouteRequest,
@@ -50,6 +52,11 @@ export const routeApi = {
 
     setVisibility: async (data: VisibilityRequest): Promise<VisibilityResponse> => {
         const response = await api.post<VisibilityResponse>("/route/visibility/", data);
+        return response.data;
+    },
+
+    suggestCity: async (data: CitySuggestionRequest): Promise<CitySuggestionResponse> => {
+        const response = await api.post<CitySuggestionResponse>("/route/city-suggestions/", data);
         return response.data;
     },
 

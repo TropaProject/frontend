@@ -9,9 +9,10 @@ interface BaseModalProps {
     onClose: () => void;
     children: ReactNode;
     className?: string;
+    backdropClassName?: string;
 }
 
-export const BaseModal = ({ isOpen, onClose, children, className = '' }: BaseModalProps) => {
+export const BaseModal = ({ isOpen, onClose, children, className = '', backdropClassName = 'bg-text/15' }: BaseModalProps) => {
     return (
         <Transition show={isOpen} as={Fragment}>
             <Dialog onClose={onClose} className="relative z-100">
@@ -24,7 +25,7 @@ export const BaseModal = ({ isOpen, onClose, children, className = '' }: BaseMod
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <DialogBackdrop className="fixed inset-0 bg-text/15" />
+                    <DialogBackdrop className={`fixed inset-0 ${backdropClassName}`} />
                 </Transition.Child>
 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
