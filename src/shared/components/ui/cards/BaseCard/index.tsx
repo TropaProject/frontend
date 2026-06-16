@@ -42,9 +42,14 @@ export default function BaseCard({
                     "relative h-full -rotate-1 overflow-hidden"
                 )}>
                     <img
-                        src={image}
+                        src={image || '/place.jpg'}
                         alt={title}
                         className="w-full h-full object-cover "
+                        onError={(e) => {
+                            if ((e.target as HTMLImageElement).src !== '/place.jpg') {
+                                (e.target as HTMLImageElement).src = '/place.jpg';
+                            }
+                        }}
                     />
                 </div>
 

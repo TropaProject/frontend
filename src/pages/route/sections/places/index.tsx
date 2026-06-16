@@ -44,7 +44,7 @@ export const RoutePlacesSection = ({ points, onPointClick, className, routeId, c
                                 description: point.description,
                                 rating: point.average_rating,
                                 reviewsCount: point.reviews_count,
-                                image: point.image_url ?? undefined,
+                                image: point.image_url ?? '/place.jpg',
                                 city: point.city ?? undefined,
                                 badgeTypes: point.is_partner ? ['developers_choice'] : undefined,
                                 verifiedDate: `Чирик проверил ${createdAt}`,

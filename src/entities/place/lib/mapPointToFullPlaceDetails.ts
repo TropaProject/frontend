@@ -9,6 +9,7 @@ export const mapPointToFullPlaceDetails = (point: PointDetailDTO): FullPlaceDeta
     description: point.description,
     rating: point.average_rating,
     reviewsCount: point.reviews_count,
+    image: point.image_url ?? '/place.jpg',
     address: point.address ?? "",
     metro: "",
     budgetText: point.average_cost ? `Средний чек: ${point.average_cost.toLocaleString("ru-RU")} ₽` : "",

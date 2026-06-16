@@ -46,9 +46,16 @@ export default function EntityCard({
             <EntityCardBorder variant={border?.variant} className={clsx('z-10', border?.color)} />
 
             <div className="relative z-0 w-full bg-text/30 aspect-[5/4] overflow-hidden desktop:rounded-tr-2xl rounded-t-2xl desktop:rounded-tl-3xl desktop:mt-1 desktop:-rotate-[1.25deg]">
-                {image && (
-                    <img src={image} alt={title} className="w-full h-full object-cover" />
-                )}
+                <img 
+                    src={image || '/place.jpg'} 
+                    alt={title} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        if ((e.target as HTMLImageElement).src !== '/place.jpg') {
+                            (e.target as HTMLImageElement).src = '/place.jpg';
+                        }
+                    }}
+                />
             </div>
 
             {city && <CityBadge city={city} className="desktop:left-6 desktop:top-8" />}

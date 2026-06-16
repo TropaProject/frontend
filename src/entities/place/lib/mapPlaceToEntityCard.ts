@@ -10,7 +10,7 @@ export const mapPlaceToEntityCard = (place: FavoritePointDTO): EntityCardProps =
         id: place.id,
         title: place.name,
         description: place.description,
-        image: place.image_url ?? undefined,
+        image: place.image_url ?? '/place.jpg',
         city: place.city ?? undefined,
         price: place.average_cost != null && place.average_cost > 0
             ? `${place.average_cost.toLocaleString('ru-RU')} ₽`

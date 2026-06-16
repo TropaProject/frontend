@@ -57,7 +57,7 @@ export const mapRouteToEntityCard = (route: RouteListItem): EntityCardProps => {
         id: route.route_id,
         title: route.title || 'Без названия',
         description: route.description || STATUS_LABELS[route.status],
-        image: route.image ?? undefined,
+        image: route.image ?? '/place.jpg',
         city: route.city ?? undefined,
         price: route.total_cost != null && route.total_cost > 0
             ? `${route.total_cost.toLocaleString('ru-RU')} ₽`
