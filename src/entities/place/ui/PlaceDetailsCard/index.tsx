@@ -37,9 +37,16 @@ export default function PlaceDetailsCard({
                 <EntityCardBorder variant={border?.variant} className={clsx('z-10', border?.color)} />
 
                 <div className="relative pr-1 tablet:pr-0 col-span-6 z-0 rounded-t-2xl tablet:aspect-auto aspect-[3/2] xs:aspect-[11/5] tablet:rounded-t-none tablet:rounded-l-2xl overflow-hidden tablet:max-h-full w-full">
-                    {image && (
-                        <img src={image} alt={title} className="w-full h-full object-cover" />
-                    )}
+                    <img 
+                        src={image || '/place.jpg'} 
+                        alt={title} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                            if ((e.target as HTMLImageElement).src !== '/place.jpg') {
+                                (e.target as HTMLImageElement).src = '/place.jpg';
+                            }
+                        }}
+                    />
                     <div className='h-90 w-full bg-text/30 object-cover' />
                 </div>
 
